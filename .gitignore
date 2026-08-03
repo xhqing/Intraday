@@ -1,0 +1,41 @@
+# 量化回测数据缓存（parquet 快照，大文件，可从数据源重生，不入库）
+.claude/skills/quant/data_cache/
+
+# 回测运行时产物（每笔记录、原始结果输出等；可重生，不入库）
+.claude/skills/quant/output/
+
+# 临时产物目录（预览图、调试快照、一次性脚本等），不入库
+tmp/
+
+# Python 字节码缓存（本地生成，不入库）
+__pycache__/
+*.pyc
+
+# node_modules 全局兜底
+node_modules/
+
+# 系统杂物
+.DS_Store
+
+# Claude Code 个人本地配置（permissions + autoMemoryDirectory 绝对路径），仅本机、不入库；
+# clone 者复制 .claude/settings.local.example.json → settings.local.json 后按本机路径填
+.claude/settings.local.json
+
+# hook 运行时状态文件（memory 变更标记 / diff checkpoint，机器本地）
+.claude/.memory-changed-this-session
+.claude/.last-memory-checkpoint
+
+# find-skill 运行时产物（密钥 + 生成的索引/日志，勿提交）
+.claude/skills/find-skill/.env
+.claude/skills/find-skill/cache/
+
+# 产物接力目录（含可售卖成品，勿公开）
+artifacts/
+
+# 运行时数据目录
+docs/
+
+# 本机密钥通用兜底（保留 .env.example）
+.env
+.env.*
+!.env.example
