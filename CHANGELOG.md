@@ -19,6 +19,7 @@
 
 ### 变更
 
+- **commit skill 缓存文件名简化 `.commit-skill-cache.md` → `.commit-cache.md`（2026-08-10）**：项目根缓存文件改名。原因：用户立「文件命名规范」——文件名一律用英文命名、且用尽可能简单的名字（去冗余修饰词），`skill` 属冗余；全局 commit skill 已同步改读新文件名，本文件内容不变、检测状态不丢。同批动作（全局 CLAUDE.md 新增命名规范小节、各 agent 项目同名缓存文件一并改名）详见 CapabilityManagerAgent 的 CHANGELOG。
 - **README「当前阶段」同步实际进度（2026-08-06）**：两版 README 的「Current Stage / 当前阶段」由「MVP 阶段、第一个策略是下一步交付物」（2026-08-03 文案）改为「已越过 MVP：schema / 回测引擎 / 数据层就位，日 K 趋势跟随策略已交付（`quant-swing/`，含 check_signal / backtest / analyze 三个 CLI）」，并如实列出已证伪方向（日内分钟 K 系统性证伪）与下一步（扩充标的池、跟踪实盘信号、持续复验）。原因：原文案与项目实际进度严重脱节——项目已走完「日内探索 → 系统性证伪 → 日 K 突破 → 严格验证 → 交付」全过程（见下方 2026-08-03~05 各条目），README 若继续写「MVP 待交付」会误导对外读者、与仓库实际内容（quant-swing/ 已存在）自相矛盾。防回归检查：本次只改现状描述，未触及任何已解决问题的逻辑，与 2026-08-03「quant skill 进度标注更新」同为「进度同步」纪律的延续。
 - **删除项目级 `.claude/rules/` 三个通用规范副本（2026-08-03）**：`verify-before-report.md` / `file-operation-priority-rules.md` / `tmp-dir-for-artifacts.md` 与全局 `~/.claude/rules/` 同名文件逐字节重复，而这三条规则每次会话由全局配置自动加载、实际生效来源是全局——项目副本纯属冗余维护负担，且会随全局规则演化而分叉过时。改动：删除 `.claude/rules/` 整个目录；CLAUDE.md「工作规则」段由三行 `@.claude/rules/...` 引用改为说明文字（规则由全局提供，clone 者可从 CapabilityManagerAgent 仓库的 `.claude/rules/` 获取权威副本）；两版 README 目录树去掉 `rules/` 块，第 19 行「skills 和 rules 塑造」改为「skills（外加用户的全局 rules）」。
 - **quant skill 进度标注更新（2026-08-03）**：`SKILL.md`「当前阶段」与 `README.md` 目录树中 `data.py` 由「MVP 待写」改为「已就位」，并更新下一步为「写 `backtest.py` + 最简分钟策略 → 回测 → 泛化测试（train/test 切分、参数敏感性、随机基线）→ 盘中对照」。原因：数据层已交付，进度标注随之同步，避免文档与现状脱节。
