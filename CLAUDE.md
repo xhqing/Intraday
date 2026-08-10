@@ -60,10 +60,34 @@ Markowitz 的核心产物是**量化策略代码 + 回测标定的可信度查�
 
 数据源调研（含付费第三方渠道、踩坑备忘）见 `.claude/skills/quant/data-sources.md`。
 
-## 工作规则（对本项目生效，显式引用）
+## 工作规则
 
-- @.claude/rules/verify-before-report.md — 文件改完重读验证，不凭工具返回值推断
-- @.claude/rules/file-operation-priority-rules.md — 增改查优先、慎用删除；编辑优先于重写
-- @.claude/rules/tmp-dir-for-artifacts.md — 临时产物放 `tmp/` 并入 `.gitignore`，不散落项目正式目录
+通用工作规范三件套（verify-before-report / file-operation-priority / tmp-dir-for-artifacts）由全局 `~/.claude/rules/` 提供、随全局配置自动加载，项目不再维护副本。开源 clone 者需自行在全局安装这三条规则（权威源见 CapabilityManagerAgent 仓库的 `.claude/rules/`）。
 
 > 事实性 / 数值性结论先验证再陈述（实体归属、算术、日历、API 字段、费率），禁止把推测当事实——这条是量化工作的底线：策略代码里的每一个数值都必须有据可查、可复现。
+
+## commit skill 检测缓存
+
+<!-- commit-skill: readme-standard = ok -->
+- README 中英双语 + LOGO + 徽章 + 版权署名：已就绪（2026-08-03 确认）
+
+<!-- commit-skill: license = ok -->
+- LICENSE.md：已存在（2026-08-03 确认）
+
+<!-- commit-skill: github-about = ok -->
+- GitHub About：已配置（中英双语 description + topics，2026-08-03）
+
+<!-- commit-skill: agent-persona = ok -->
+- Agent 拟人名：已写入 README（Markowitz，2026-08-03）
+
+<!-- commit-skill: attribution-name = ok -->
+- 版权人/署名引用名字：已归一为 All Contributors（2026-08-03 确认）
+
+<!-- commit-skill: readme-link-text = ok -->
+- 英文版 README 跳转中文版链接文字：已统一为「简体中文」（2026-08-03 确认）
+
+<!-- commit-skill: repo-sponsors = ok -->
+- 仓库 Sponsors 按钮：已就绪（xhqing/.github 全局默认 FUNDING.yml，2026-08-03 确认）
+
+<!-- commit-skill: readme-no-stars-badge = ok -->
+- README 徽章：已不含 GitHub Stars 数量徽章（2026-08-03 确认）

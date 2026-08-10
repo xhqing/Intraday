@@ -8,13 +8,15 @@
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
   <img src="https://img.shields.io/badge/focus-quant%20strategies-4F46E5.svg" alt="Focus: Quant Strategies" />
   <img src="https://img.shields.io/badge/markets-HK%20%2F%20US-16C784.svg" alt="Markets: HK / US" />
+  <img src="https://img.shields.io/github/last-commit/xhqing/QuantStrategistAgent" alt="Last Commit" />
+  <img src="https://img.shields.io/badge/Type-AI%20Agent-FF1493.svg" alt="Type: AI Agent" />
 </p>
 
-<p align="center">🌐 <a href="README_cn.md">中文</a></p>
+<p align="center">🌐 <a href="README_cn.md">简体中文</a></p>
 
 **Markowitz** is a personified AI agent dedicated to **quantitative strategy development** for Hong Kong and US equities, built on [Claude Code](https://claude.com/claude-code). It designs backtestable trading strategies as deterministic code, runs them against historical data to calibrate their credibility, and hands the result to **Victor** — the day-trading agent ([DayTradingAgent](https://github.com/xhqing/DayTradingAgent)) — as one weighted, quantified vote among Victor's many inputs.
 
-> This is **not** a traditional software project. There is no application to `npm install`. The repository *is* the agent: its behavior is shaped by the `skills` and `rules` under `.claude/`, which Claude Code loads as Markowitz's operating discipline.
+> This is **not** a traditional software project. There is no application to `npm install`. The repository *is* the agent: its behavior is shaped by the `skills` under `.claude/` (plus the user's global rules), which Claude Code loads as Markowitz's operating discipline.
 
 ---
 
@@ -63,10 +65,40 @@ Markowitz's product is **one weighted input** to Victor — a "quantified voter"
 
 ## How Markowitz Works
 
+<img src="assets/markowitz_workflow.svg" width="100%" alt="Markowitz workflow: Design → Backtest → Calibrate → Deliver" />
+
 1. **Design** — write a strategy in `strategies/` as a pure function `evaluate(bars, params) -> dict | None` that returns the strategy / tactic schema **without** confidence.
 2. **Backtest** — `backtest.py` walks the K-lines bar-by-bar (no future data), records every trade's R-multiple, and groups results by `category`.
 3. **Calibrate** — aggregate per category into `confidence_table.json` (`win_rate` / `avg_R` / `samples`); small-sample categories are discounted.
 4. **Deliver** — the strategy + its credibility table become a weighted input for Victor.
+
+The mechanics of one backtested trade (real data — daily trend-following on `US.TSLA`, 2014):
+
+<img src="assets/backtest_example.png" width="100%" alt="A real backtest trade: signal at t close → t+1 open entry → trailing stop exit → R-multiple" />
+
+- Signal fires at the close of bar `t` → fill at the **open of `t+1`** (conservative — never at the signal bar's own price).
+- Exits are mechanical: fixed stop / take-profit / timeout for intraday, trailing stop (wins-only) for daily trend-following — whichever triggers first, filled at the trigger bar's open.
+- `R = (exit − entry) / risk`, where `risk = stop_atr × ATR` — every trade's result is a risk-multiple, directly comparable across strategies.
+- Costs (slippage + commission + stamp duty) are subtracted per trade **before** any performance number is reported.
+
+---
+
+## Backtested Track Record
+
+The first delivered strategy — **daily trend-following** (long-only, 37 US large-caps & ETFs, trailing stop at 3×ATR) — is backtested on ~20 years of daily K-lines (2006–2026, 2,086 trades):
+
+<img src="assets/performance.png" width="100%" alt="Backtested performance: cumulative net R, per-year net avg_R, per-stock net avg_R, R distribution" />
+
+| Metric | Value |
+|---|---|
+| Period / trades | 2006–2026 · 2,086 trades |
+| Net avg_R (after 6 bps round-trip costs) | **+0.25 R** per trade |
+| Growth rate `g` at 2% risk per trade | **+0.44% per trade** |
+| Win rate | 40.8% (low win-rate, high payoff — the design) |
+| Positive-`g` stocks | 34 / 37 |
+| Positive years | 18 / 21 (negatives: 2008, 2014, 2022 — crisis / sideways regimes) |
+
+Validation beyond the headline numbers (cross-sectional, yearly, parameter robustness, strict walk-forward with zero decay) is documented in [`quant-swing/STRATEGY.md`](quant-swing/STRATEGY.md). Honest notes: intraday (minute-K) strategies were **systematically falsified** — momentum and mean-reversion both show no edge net of HK stamp duty (a documented conclusion, not a gap); the daily scale is where the edge survives. Backtested performance does not guarantee future results — see the [Risk Disclaimer](#risk-disclaimer).
 
 ---
 
@@ -96,11 +128,6 @@ QuantStrategistAgent/
 │   ├── settings.local.example.json # Template for settings.local.json (tracked)
 │   ├── memory/                    # AutoMemory store (project-level, tracked — not gitignored)
 │   │
-│   ├── rules/                     # General working discipline (cross-domain)
-│   │   ├── verify-before-report.md
-│   │   ├── file-operation-priority-rules.md
-│   │   └── tmp-dir-for-artifacts.md
-│   │
 │   └── skills/
 │       ├── quant/                 # Quant strategy spec — the heart of Markowitz
 │       │   ├── SKILL.md           # Master file: execution spec + ironclad rules
@@ -127,13 +154,19 @@ To actually run Markowitz, you need — outside this repo:
 - Python 3 with `pandas` (and `futu-api` / longbridge bindings as needed)
 - Optionally copy `.claude/settings.local.example.json` → `.claude/settings.local.json` and set `autoMemoryDirectory` to your machine's absolute path to store AutoMemory inside the project
 
-Without these, the repo still reads as a complete spec of *how a disciplined quant-strategy agent should behave*.
+Without these, the repo still reads as a complete spec of *how a disciplined quant-swing agent should behave*.
 
 ---
 
 ## Current Stage
 
-Markowitz is at the **MVP stage**: the schema, backtest design, and data-source survey are in place; the first backtestable strategy (e.g., 5-day trend + volume-breakout pullback) and the backtest driver are the next concrete deliverables.
+Markowitz has moved past MVP. The schema, backtest engine, and data layer are complete, and the **first validated strategy is delivered** — daily trend-following on 37 US stocks (see [Backtested Track Record](#backtested-track-record)). It ships as a standalone toolset in [`quant-swing/`](quant-swing/README.md) with three CLIs: `check_signal.py` (daily signal scan), `backtest.py` (schemes / custom backtests), and `analyze.py` (performance analysis).
+
+What was tried and set aside, honestly:
+
+- **Intraday (minute-K) strategies were systematically falsified** — no predictive edge net of HK stamp duty; documented in `.claude/skills/quant/SKILL.md` to prevent re-treading the dead end.
+- The **day-K trend-following edge survived** strict validation (34/37 stocks positive, 18/21 years positive, parameter-robust plateau, walk-forward zero decay — details in `quant-swing/STRATEGY.md`).
+- Next milestones: broaden the pool (low-correlation additions), track live signal checks, and re-validate as new history accrues.
 
 ---
 
@@ -147,7 +180,7 @@ Quantitative strategies are research tools, not guarantees. Backtested performan
 
 This project is released under the MIT License, and you are additionally asked to **credit the author and cite the source** whenever you use, redistribute, or build upon it:
 
-- **Author:** Huaqing Xu
+- **Author:** All Contributors
 - **Project:** Markowitz — Quant Strategy Agent (HK / US Equities)
 - **Source:** https://github.com/xhqing/QuantStrategistAgent
 
@@ -157,4 +190,4 @@ If you fork, reference, or derive from this repository, please retain this attri
 
 ## License
 
-[MIT](LICENSE.md) © 2026 Huaqing Xu and contributors.
+[MIT](LICENSE.md) © 2026 All Contributors.

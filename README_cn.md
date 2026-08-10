@@ -8,13 +8,15 @@
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
   <img src="https://img.shields.io/badge/focus-quant%20strategies-4F46E5.svg" alt="Focus: Quant Strategies" />
   <img src="https://img.shields.io/badge/markets-HK%20%2F%20US-16C784.svg" alt="Markets: HK / US" />
+  <img src="https://img.shields.io/github/last-commit/xhqing/QuantStrategistAgent" alt="Last Commit" />
+  <img src="https://img.shields.io/badge/Type-AI%20Agent-FF1493.svg" alt="Type: AI Agent" />
 </p>
 
 <p align="center">🌐 <a href="README.md">English</a></p>
 
 **Markowitz** 是一个专职**量化策略开发**的 AI agent，面向港股 / 美股，基于 [Claude Code](https://claude.com/claude-code) 构建。它把交易思路写成可回测的确定性代码，用历史数据回测标定策略的可信度，再把结果交给日内交易 agent **Victor**（[DayTradingAgent](https://github.com/xhqing/DayTradingAgent)），作为 Victor 众多输入中一个「经过历史验证、可量化的加权投票员」。
 
-> 这**不是**一个传统意义上的软件项目：没有可供 `npm install` 的应用。**这个仓库本身就是 agent**——它的全部行为方式都由 `.claude/` 下的 skills 和 rules 塑造，Claude Code 加载它们，作为 Markowitz 的工作纪律。
+> 这**不是**一个传统意义上的软件项目：没有可供 `npm install` 的应用。**这个仓库本身就是 agent**——它的全部行为方式都由 `.claude/` 下的 skills（外加用户的全局 rules）塑造，Claude Code 加载它们，作为 Markowitz 的工作纪律。
 
 ---
 
@@ -63,10 +65,40 @@ Markowitz 的产物是 Victor 的**其中一个加权输入**——一个「经�
 
 ## Markowitz 如何工作
 
+<img src="assets/markowitz_workflow.svg" width="100%" alt="Markowitz 工作流：设计 → 回测 → 标定 → 交付" />
+
 1. **设计**——在 `strategies/` 写一个纯函数策略 `evaluate(bars, params) -> dict | None`，返回战略层 / 战术层 schema，**不含** confidence。
 2. **回测**——`backtest.py` 逐根遍历 K 线（严防未来函数），记录每笔交易的 R 倍数，按 `category` 分组。
 3. **标定**——按类别聚合出 `confidence_table.json`（`win_rate` / `avg_R` / `samples`）；样本太少的类别打折。
 4. **交付**——策略 + 可信度查表，成为 Victor 的一个加权输入。
+
+一笔真实回测交易的执行机制（`US.TSLA` 日 K 趋势跟随，2014 年）：
+
+<img src="assets/backtest_example.png" width="100%" alt="真实回测交易：t 收盘出信号 → t+1 开盘进场 → trailing 止损出场 → 记 R 倍数" />
+
+- 信号在 `t` 根**收盘后**产生 → 在 **`t+1` 开盘价**成交（保守假设——绝不用信号根自己的价格）。
+- 出场纯机械：日内用固定止损 / 止盈 / 超时，日 K 趋势跟随用移动止损（只进不退）——谁先触发谁生效，按触发根开盘价成交。
+- `R = (出场价 − 进场价) / 风险`，其中 `风险 = stop_atr × ATR`——每笔交易的盈亏都换算成风险倍数，跨策略可直接比较。
+- 成本（滑点 + 佣金 + 印花税）在**报出任何业绩数字之前**逐笔扣除。
+
+---
+
+## 回测业绩
+
+第一个交付的策略——**日 K 趋势跟随**（只做多，37 只美股大盘股与 ETF，移动止损 3×ATR）——在约 20 年日 K（2006–2026，共 2086 笔）上回测：
+
+<img src="assets/performance.png" width="100%" alt="回测业绩：累计净 R、按年净 avg_R、按标的净 avg_R、R 分布" />
+
+| 指标 | 数值 |
+|---|---|
+| 区间 / 笔数 | 2006–2026 · 2086 笔 |
+| 净 avg_R（扣 6bps 双边成本后） | 每笔 **+0.25 R** |
+| 每笔风险 2% 的对数增长率 `g` | **每笔 +0.44%** |
+| 胜率 | 40.8%（低胜率、高盈亏比——设计如此） |
+| `g` 为正的标的 | 34 / 37 |
+| 正收益年份 | 18 / 21（负的三年：2008、2014、2022——危机 / 震荡市） |
+
+业绩数字之外的多重验证（横截面、按年、参数稳健性、严格 walk-forward 零衰减）见 [`quant-swing/STRATEGY.md`](quant-swing/STRATEGY.md)。诚实说明：**日内（分钟 K）策略已被系统性证伪**——动量与均值回归在扣港股印花税后均无可用 edge（这是已记录的结论，不是缺口）；edge 存在于日 K 尺度。回测业绩不代表未来收益——见下方[风险声明](#风险声明)。
 
 ---
 
@@ -95,11 +127,6 @@ QuantStrategistAgent/
 │   ├── settings.local.json        # 本机配置：permissions + autoMemoryDirectory（已 gitignore）
 │   ├── settings.local.example.json # settings.local.json 模板（入库）
 │   ├── memory/                    # AutoMemory 存储（项目级，入库——不 gitignore）
-│   │
-│   ├── rules/                     # 通用工作规范（跨领域）
-│   │   ├── verify-before-report.md
-│   │   ├── file-operation-priority-rules.md
-│   │   └── tmp-dir-for-artifacts.md
 │   │
 │   └── skills/
 │       ├── quant/                 # 量化策略开发规范——Markowitz 的核心
@@ -133,7 +160,13 @@ QuantStrategistAgent/
 
 ## 当前阶段
 
-Markowitz 当前处于 **MVP 阶段**：schema、回测设计与数据源调研已就位；第一个可回测策略（如 5 日顺势 + 放量突破回踩）与回测驱动器是接下来的具体交付物。
+Markowitz 已越过 MVP。schema、回测引擎与数据层全部就位，**第一个验证过的策略已交付**——37 只美股日 K 趋势跟随（见上方[回测业绩](#回测业绩)）。它以独立工具集的形式放在 [`quant-swing/`](quant-swing/README.md)，含三个 CLI：`check_signal.py`（每日信号扫描）、`backtest.py`（方案 / 自定义回测）、`analyze.py`（业绩分析）。
+
+已尝试并放下的方向，如实说明：
+
+- **日内（分钟 K）策略已被系统性证伪**——扣港股印花税后无预测 edge；结论已记入 `.claude/skills/quant/SKILL.md`，防止重走死胡同。
+- **日 K 趋势跟随 edge 通过了严格验证**（34/37 标的正、18/21 年正、参数稳健高原、walk-forward 零衰减——详见 `quant-swing/STRATEGY.md`）。
+- 下一步：扩充标的池（低相关品种）、跟踪实盘信号检查、随新历史积累持续复验。
 
 ---
 
@@ -147,7 +180,7 @@ Markowitz 当前处于 **MVP 阶段**：schema、回测设计与数据源调研�
 
 本项目以 MIT 许可证开源，额外请求使用者在**使用、二次分发或基于本项目构建衍生作品**时，注明作者并引用项目地址：
 
-- **作者：** Huaqing Xu
+- **作者：** All Contributors
 - **项目：** Markowitz —— 港股 / 美股量化策略 Agent
 - **地址：** https://github.com/xhqing/QuantStrategistAgent
 
@@ -157,4 +190,4 @@ Markowitz 当前处于 **MVP 阶段**：schema、回测设计与数据源调研�
 
 ## 许可证
 
-[MIT](LICENSE.md) © 2026 Huaqing Xu 及贡献者。
+[MIT](LICENSE.md) © 2026 All Contributors。

@@ -22,15 +22,15 @@ quant/
 ├── README.md             # 本文件（目录用途 + 规矩）
 ├── schema.md             # 输入输出契约 + 回测设计
 ├── data-sources.md       # 日内分时数据源调研
-├── data.py               # K 线拉取（富途分钟 K + 长桥日 K，喂策略 + 回测共用）—— MVP 待写
-├── backtest.py           # 回测驱动器：拉数据 → 逐根喂策略 → 统计 → 出「类别 → 可信度」查表 —— MVP 待写
+├── data.py               # 数据层：拉取（富途 OpenD 分钟 K + 日 K）+ parquet 缓存 + 增量更新 + 快照备份 —— 已就位
+├── backtest.py           # 回测驱动器：读缓存 → 逐根喂策略 → 内置出场 → 算R → 类别统计 → 泛化测试 —— 已就位
 ├── strategies/           # 每个策略一个文件，纯逻辑（不含置信度计算）
-│   └── trend_breakout.py # 例：5 日顺势 + 放量突破回踩不破 —— MVP 待写
+│   └── trend_breakout.py # 5m 动量突破（收盘创新高 + 放量）—— 已就位
 ├── data_cache/           # parquet 快照（已 gitignore，可从数据源重生）
 └── confidence_table.json # 回测产出的「类别 → 可信度」查表
 ```
 
-> `data.py` / `backtest.py` / `strategies/*.py` 标「MVP 待写」——本 skill 现阶段 schema 与设计已定，具体代码是接下来的交付物。
+> `data.py` 用法见其文件头 docstring（fetch / fetch-all / snapshot / restore / verify 五个子命令）；`backtest.py` 用法见其 docstring（run / run-all / generalization 三个子命令）。回测口径（成交价假设、出场规则、成本、risk 下限）见 `backtest.py` 文件头与 `schema.md` 第四节。
 
 ## 怎么加新策略
 
