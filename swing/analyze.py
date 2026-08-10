@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """数据分析 CLI：回测交易数据的各维度分析。复用 backtest.py 的采集逻辑。
 
-用法（在 quant-swing/ 目录下）：
+用法（在 swing/ 目录下）：
   python3 analyze.py monthly            # 月收益率分布（描述统计 + 直方图 + 最好/最差月）
   python3 analyze.py hold               # 持仓时间分布（均值/中位/分位 + 直方图）
   python3 analyze.py yearly             # 按年分解（各年池化 g）

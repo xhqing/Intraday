@@ -98,7 +98,7 @@ Markowitz 的产物是 Victor 的**其中一个加权输入**——一个「经�
 | `g` 为正的标的 | 34 / 37 |
 | 正收益年份 | 18 / 21（负的三年：2008、2014、2022——危机 / 震荡市） |
 
-业绩数字之外的多重验证（横截面、按年、参数稳健性、严格 walk-forward 零衰减）见 [`quant-swing/STRATEGY.md`](quant-swing/STRATEGY.md)。诚实说明：**日内（分钟 K）策略已被系统性证伪**——动量与均值回归在扣港股印花税后均无可用 edge（这是已记录的结论，不是缺口）；edge 存在于日 K 尺度。回测业绩不代表未来收益——见下方[风险声明](#风险声明)。
+业绩数字之外的多重验证（横截面、按年、参数稳健性、严格 walk-forward 零衰减）见 [`swing/STRATEGY.md`](swing/STRATEGY.md)。诚实说明：**日内（分钟 K）策略已被系统性证伪**——动量与均值回归在扣港股印花税后均无可用 edge（这是已记录的结论，不是缺口）；edge 存在于日 K 尺度。回测业绩不代表未来收益——见下方[风险声明](#风险声明)。
 
 ---
 
@@ -160,12 +160,12 @@ QuantStrategistAgent/
 
 ## 当前阶段
 
-Markowitz 已越过 MVP。schema、回测引擎与数据层全部就位，**第一个验证过的策略已交付**——37 只美股日 K 趋势跟随（见上方[回测业绩](#回测业绩)）。它以独立工具集的形式放在 [`quant-swing/`](quant-swing/README.md)，含三个 CLI：`check_signal.py`（每日信号扫描）、`backtest.py`（方案 / 自定义回测）、`analyze.py`（业绩分析）。
+Markowitz 已越过 MVP。schema、回测引擎与数据层全部就位，**第一个验证过的策略已交付**——37 只美股日 K 趋势跟随（见上方[回测业绩](#回测业绩)）。它以独立工具集的形式放在 [`swing/`](swing/README.md)，含三个 CLI：`check_signal.py`（每日信号扫描）、`backtest.py`（方案 / 自定义回测）、`analyze.py`（业绩分析）。
 
 已尝试并放下的方向，如实说明：
 
 - **日内（分钟 K）策略已被系统性证伪**——扣港股印花税后无预测 edge；结论已记入 `.claude/skills/quant/SKILL.md`，防止重走死胡同。
-- **日 K 趋势跟随 edge 通过了严格验证**（34/37 标的正、18/21 年正、参数稳健高原、walk-forward 零衰减——详见 `quant-swing/STRATEGY.md`）。
+- **日 K 趋势跟随 edge 通过了严格验证**（34/37 标的正、18/21 年正、参数稳健高原、walk-forward 零衰减——详见 `swing/STRATEGY.md`）。
 - 下一步：扩充标的池（低相关品种）、跟踪实盘信号检查、随新历史积累持续复验。
 
 ---

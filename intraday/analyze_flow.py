@@ -4,7 +4,7 @@
 理论依据（smart money 假说）：大单（机构）可能比小单（散户）更知情——全量 OFI 里大单小单
 方向互相抵消可能不显著，但只统计大单的"资金流"可能显著。本脚本验证这个可能性。
 
-数据：quant-swing/data_tick/mbo_chunks/*.parquet（QQQ mbo 全量订单簿，2026-08-03）。
+数据：data_tick/mbo_chunks/*.parquet（QQQ mbo 全量订单簿，2026-08-03）。
 方法：
   1. 从每笔订单簿事件取新增委托（action=A）的买卖方向（side）和数量（size）
   2. 按 size 分层：大单（> 日均 size 的某分位）vs 小单

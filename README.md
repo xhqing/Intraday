@@ -98,7 +98,7 @@ The first delivered strategy — **daily trend-following** (long-only, 37 US lar
 | Positive-`g` stocks | 34 / 37 |
 | Positive years | 18 / 21 (negatives: 2008, 2014, 2022 — crisis / sideways regimes) |
 
-Validation beyond the headline numbers (cross-sectional, yearly, parameter robustness, strict walk-forward with zero decay) is documented in [`quant-swing/STRATEGY.md`](quant-swing/STRATEGY.md). Honest notes: intraday (minute-K) strategies were **systematically falsified** — momentum and mean-reversion both show no edge net of HK stamp duty (a documented conclusion, not a gap); the daily scale is where the edge survives. Backtested performance does not guarantee future results — see the [Risk Disclaimer](#risk-disclaimer).
+Validation beyond the headline numbers (cross-sectional, yearly, parameter robustness, strict walk-forward with zero decay) is documented in [`swing/STRATEGY.md`](swing/STRATEGY.md). Honest notes: intraday (minute-K) strategies were **systematically falsified** — momentum and mean-reversion both show no edge net of HK stamp duty (a documented conclusion, not a gap); the daily scale is where the edge survives. Backtested performance does not guarantee future results — see the [Risk Disclaimer](#risk-disclaimer).
 
 ---
 
@@ -160,12 +160,12 @@ Without these, the repo still reads as a complete spec of *how a disciplined qua
 
 ## Current Stage
 
-Markowitz has moved past MVP. The schema, backtest engine, and data layer are complete, and the **first validated strategy is delivered** — daily trend-following on 37 US stocks (see [Backtested Track Record](#backtested-track-record)). It ships as a standalone toolset in [`quant-swing/`](quant-swing/README.md) with three CLIs: `check_signal.py` (daily signal scan), `backtest.py` (schemes / custom backtests), and `analyze.py` (performance analysis).
+Markowitz has moved past MVP. The schema, backtest engine, and data layer are complete, and the **first validated strategy is delivered** — daily trend-following on 37 US stocks (see [Backtested Track Record](#backtested-track-record)). It ships as a standalone toolset in [`swing/`](swing/README.md) with three CLIs: `check_signal.py` (daily signal scan), `backtest.py` (schemes / custom backtests), and `analyze.py` (performance analysis).
 
 What was tried and set aside, honestly:
 
 - **Intraday (minute-K) strategies were systematically falsified** — no predictive edge net of HK stamp duty; documented in `.claude/skills/quant/SKILL.md` to prevent re-treading the dead end.
-- The **day-K trend-following edge survived** strict validation (34/37 stocks positive, 18/21 years positive, parameter-robust plateau, walk-forward zero decay — details in `quant-swing/STRATEGY.md`).
+- The **day-K trend-following edge survived** strict validation (34/37 stocks positive, 18/21 years positive, parameter-robust plateau, walk-forward zero decay — details in `swing/STRATEGY.md`).
 - Next milestones: broaden the pool (low-correlation additions), track live signal checks, and re-validate as new history accrues.
 
 ---

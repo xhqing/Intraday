@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """回测 CLI：对方案（或自定义标的/模式）跑历史回测，输出全部关键维度指标。
 
-用法（在 quant-swing/ 目录下）：
+用法（在 swing/ 目录下）：
   # 回测方案1（推荐交付方案：只做多 37 美股，全历史 ~20 年）
   python3 backtest.py --scheme 1
 

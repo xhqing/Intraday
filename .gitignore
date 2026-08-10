@@ -41,4 +41,4 @@ docs/
 !.env.example
 
 # 量化策略 tick/订单簿数据（Databento，大文件，已备份到 market-data-backup Release）
-quant-intraday/data_tick/
+intraday/data_tick/

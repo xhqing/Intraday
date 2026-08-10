@@ -1,4 +1,4 @@
-# quant-swing — 日 K 趋势跟随策略工具
+# swing — 日 K 趋势跟随策略工具
 
 > 量化策略（Markowitz 开发）的用户 CLI 工具。**日 K 波段趋势跟随**，经 20 年 × 37 只美股历史验证（四重泛化测试全过）。策略完整文字版见 [STRATEGY.md](STRATEGY.md)。
 
@@ -9,7 +9,7 @@
 cd .claude/skills/quant && python3 data.py fetch-all --ktype DAY
 
 # 2. 每天美股收盘后，检测全部标的信号
-cd quant-swing && python3 signal.py
+cd swing && python3 check_signal.py
 
 # 有 ✅ 触发信号 → 次日开盘买入（仓位/止损/trailing 见 STRATEGY.md）
 ```
@@ -18,7 +18,7 @@ cd quant-swing && python3 signal.py
 
 | 命令 | 功能 |
 |---|---|
-| `python3 signal.py` | **检测信号**（每天收盘后跑）。`--symbols NVDA --verbose` 单标的详情；`--scheme 2` 换方案 |
+| `python3 check_signal.py` | **检测信号**（每天收盘后跑）。`--symbols NVDA --verbose` 单标的详情；`--scheme 2` 换方案 |
 | `python3 backtest.py` | **回测**。`--scheme 1-4` 四种方案；`--all` 对比全部；`--symbols --mode` 自定义 |
 | `python3 analyze.py <维度>` | **数据分析**。维度：`monthly` 月收益 / `hold` 持仓 / `yearly` 按年 / `symbols` 标的排名 / `worst-month` 最差月 / `gap` 跳空 / `signal-day` 信号次日行为 |
 
@@ -36,11 +36,11 @@ cd quant-swing && python3 signal.py
 ## 目录结构
 
 ```
-quant-swing/
+swing/
 ├── README.md        # 本文件（项目说明）
 ├── STRATEGY.md      # 策略完整文字版（信号/执行/止损/trailing/仓位/历史表现/已证伪方案/局限）
 ├── common.py        # 共享：标的池/参数/数据加载（三个 CLI 共用的唯一接缝）
-├── signal.py        # 检测信号 CLI
+├── check_signal.py  # 检测信号 CLI
 ├── backtest.py      # 回测 CLI
 └── analyze.py       # 数据分析 CLI
 ```

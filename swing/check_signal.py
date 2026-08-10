@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """检测信号 CLI：每天收盘后判断哪些标的触发日 K 趋势跟随做多信号。
 
-用法（在 quant-swing/ 目录下）：
+用法（在 swing/ 目录下）：
   # 检测全部 37 只标的（默认，每天美股收盘后跑）
-  python3 signal.py
+  python3 check_signal.py
 
   # 指定标的（自动补 US. 前缀）
-  python3 signal.py --symbols SPY,NVDA,AAPL
+  python3 check_signal.py --symbols SPY,NVDA,AAPL
 
   # 详细模式（无信号时显示距离触发差多少）
   python3 signal.py --symbols NVDA --verbose
