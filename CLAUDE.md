@@ -66,6 +66,12 @@ Markowitz 的核心产物是**量化策略代码 + 回测标定的可信度查�
 
 > 事实性 / 数值性结论先验证再陈述（实体归属、算术、日历、API 字段、费率），禁止把推测当事实——这条是量化工作的底线：策略代码里的每一个数值都必须有据可查、可复现。
 
+## 子项目清单（`.claude/` 超集关系）
+
+本项目（Markowitz）负责维护以下子项目，`.claude/` 与子项目 `.claude/` 之间维护「Agent 项目为权威源、子项目为超集」的关系（全局规则「Agent 项目与子项目的 `.claude/` 超集关系」，2026-08-10 立）：本文件全文随附进子项目 `.claude/CLAUDE.md`，其中「本项目」均指 QuantStrategistAgent。
+
+- **QuantStrategistAgent（Markowitz）→ gridtrader**：独立仓库 [xhqing/gridtrader](https://github.com/xhqing/gridtrader)，网格交易策略开发及回测工具（Python / backtrader，Pipenv 管理依赖，`get_data_scripts/` 拉数据、`data/` 放样例数据）。
+
 ## commit skill 检测缓存
 
 <!-- commit-skill: readme-standard = ok -->

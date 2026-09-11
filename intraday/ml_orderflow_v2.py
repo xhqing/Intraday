@@ -36,20 +36,29 @@ def _agg_minute(df):
                    price=df["price"].fillna(0), size=df["size"].fillna(0))
     df = df.set_index("ts").sort_index()
     g = df.groupby(pd.Grouper(freq="1min"))
-    min_df = pd.DataFrame({
-        "ofi": g["signed"].sum(),
-        "n_buy": (df[df["side_v"] > 0].groupby(pd.Grouper(freq="1min"))["size"].count()).reindex(g.size().index).fillna(0),
-        "n_sell": (df[df["side_v"] < 0].groupby(pd.Grouper(freq="1min"))["size"].count()).reindex(g.size().index).fillna(0),
-        "avg_size": g["size"].mean(),
-        "open": g["price"].first(),
-        "high": g["price"].max(),
-        "low": g["price"].min(),
-        "close": g["price"].last(),
-        "vol": g["size"].sum(),
-        "large_vol": g.apply(lambda x: x.loc[x["size"] > x["size"].quantile(0.75), "signed"].sum()),  # 简化大单
-    }).fillna(0)
-    min_df["flow_large"] = min_df["large_vol"]
-    return min_df.drop(columns=["large_vol"])
+    # 注意：不能用 pd.DataFrame({...}) 一次性构造——pandas 3.0.1 在混合 tz index 的大 dict 上
+    # 有「Buffer has wrong number of dimensions (expected 1, got 2)」回归 bug，改为逐列赋值
+    idx = g.size().index
+    nb = df[df["side_v"] > 0].groupby(pd.Grouper(freq="1min"))["size"].count().reindex(idx).fillna(0)
+    ns = df[df["side_v"] < 0].groupby(pd.Grouper(freq="1min"))["size"].count().reindex(idx).fillna(0)
+    min_df = pd.DataFrame(index=idx)
+    min_df["ofi"] = g["signed"].sum()
+    min_df["n_buy"] = nb
+    min_df["n_sell"] = ns
+    min_df["avg_size"] = g["size"].mean()
+    min_df["open"] = g["price"].first()
+    min_df["high"] = g["price"].max()
+    min_df["low"] = g["price"].min()
+    min_df["close"] = g["price"].last()
+    min_df["vol"] = g["size"].sum()
+    # 简化大单：每分钟内 size > 该分钟 P75 的行的 signed 之和。
+    # 用分钟桶列 + 常规 groupby（pandas 3 的 Grouper+apply/transform 在部分数据上返回
+    # DataFrame 或 index 错位，普通列分组无此问题）
+    df["bucket"] = df.index.floor("1min")
+    q75 = df.groupby("bucket")["size"].transform(lambda x: x.quantile(0.75))
+    large_mask = df["size"].values > q75.values
+    min_df["flow_large"] = df.loc[large_mask].groupby("bucket")["signed"].sum().reindex(idx).fillna(0)
+    return min_df.fillna(0)
 
 
 def load_all_mbo() -> pd.DataFrame:

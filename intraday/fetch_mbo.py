@@ -51,6 +51,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--days", type=int, default=20)
     parser.add_argument("--end", default=None, help="结束日期 YYYY-MM-DD（默认今天）")
+    parser.add_argument("--start", default=None, help="起始日期 YYYY-MM-DD（指定后忽略 --days/--end，拉 start ~ end 全区间）")
     args = parser.parse_args()
 
     # key 必须在 Historical() 之前设：取 zshrc 里 db- 开头的最后一条（真实 key，避免占位符"你的key"）
@@ -65,9 +66,13 @@ def main() -> None:
 
     from databento import Historical
     h = Historical()
-    end = datetime.now(timezone.utc).date() if not args.end else datetime.strptime(args.end, "%Y-%m-%d").date()
-    days = [(end - timedelta(days=i)).isoformat() for i in range(args.days - 1, -1, -1)]
-    print(f"拉取 {args.days} 天 QQQ mbo（{days[0]} ~ {days[-1]}），每 2 小时分段落盘断点续传")
+    if args.start:
+        end = datetime.strptime(args.end, "%Y-%m-%d").date()
+        days = [d.isoformat() for d in pd.date_range(args.start, end, freq="D")]
+    else:
+        end = datetime.now(timezone.utc).date() if not args.end else datetime.strptime(args.end, "%Y-%m-%d").date()
+        days = [(end - timedelta(days=i)).isoformat() for i in range(args.days - 1, -1, -1)]
+    print(f"拉取 {len(days)} 天 QQQ mbo（{days[0]} ~ {days[-1]}），每 1 小时分段落盘断点续传")
     for d in days:
         fetch_day(h, d)
 

@@ -2,7 +2,95 @@
 
 本文件记录 QuantStrategistAgent 每个版本的主要变更，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [Unreleased]
+
+### 新增（`.pi/skills` 软链接指向 `.claude/skills`：pi 会话复用同一份项目 skill）
+
+- **为什么改（2026-09-11）**：pi coding agent 从项目根 `.pi/` 读取项目级 skill，而项目 skill（quant）现存于 `.claude/skills/`。不建软链接就要维护两份副本、必然分叉；建软链接让 pi 会话直接复用 Claude Code 的同一份 skill，单一权威源。
+- **改了什么**：新建 `.pi/skills` 软链接，目标为相对路径 `../.claude/skills`（项目整体移动后链接仍有效）。`.pi/` 未被 `.gitignore` 忽略，软链接随 git 跟踪，clone 者同样获得该链接。
+
+### 新增（信号衰减曲线 + 限价单模拟：「不可交易」结论被推翻——edge 怕延迟但不怕被动等，δ=0 挂单拿到几乎全部 edge）
+
+- **为什么改（2026-08-30）**：上一条订正确立「方向预测力成立（+24.0bps）但 t+1 开盘市价进场归零（−4.8bps）→ 不可交易」后，需回答两个续问：① 预测力在窗口内如何衰减（edge 到底能等多久）？② 既然主动吃延迟拿不到，被动挂单能不能拿到？为此做两个实验，全部与 `intraday/verify_2025.py` 完全同口径（H=6、同 15 特征、同超参数、同窗口切分、零调参，坏点清洗后 2025 年 79602 分钟）。
+- **实验一：信号衰减曲线（`intraday/decay_curve.py`，结果 `tmp/decay_curve.json`）**——对 H=1..6 各自独立训练评估（每个 H 独立 walk-forward，98 窗口），得到 AUC(H) 与净收益(H) 两条曲线：**AUC 随 H 单调衰减 0.638→0.603（判断力集中在前 1 分钟），每笔净收益几乎平坦（+25.7~+21.5bps，多持有不多赚），交易笔数与 H 成反比（H=1 共 21484 笔，是 H=6 的 6 倍）**。解读：edge 在信号后第 1 分钟内兑现，之后是噪声——与「t+1 市价进场归零」自洽，并指向唯一未被证伪的实盘路径：被动挂单。
+- **实验二：限价单模拟（`intraday/limit_sim.py`，明细 `tmp/limit_sim_2025.csv` / 汇总 `tmp/limit_sim_2025.json`）**——信号分钟 t 收盘出信号（挂单价基于 close_t，无未来函数），t+1 分钟挂限价单：做多 limit = close_t − δ、做空 limit = close_t + δ，δ ∈ {0,1,2,5,10} 美分；未触及撤单（记 0）；成交判定双口径（touch = 分钟 low/high 触及、strict = 穿过半 tick）；出场 t+6 收盘市价；成本 maker 进 0 + taker 出 3bps（原口径双边 6bps，被动进场省一半）。2025 年 5090 个信号结果：**δ=0（挂信号价）strict 口径 fill 92.5%、成交笔均 +25.3bps、每信号期望 +23.4bps——与回测口径 +24.0bps 同量级，而同位置主动市价是 −4.8bps**；方向对称（做多条件 +24.0 / 做空 +26.6）；四个月全部为正（6月 +29.0 / 7月 +25.8 / 8月 +27.5 / 9月 +12.3）；δ 越深期望越低（10 美分时 +14.0，「等更好的价」不划算——等得越久 edge 越不在）。
+- **结论改写**：「edge 存活窗口短于一分钟、不可交易」修正为——**edge 怕延迟但不怕被动等：t+1 分钟内以信号价挂限价单，触及口径下拿到几乎全部 edge（+23.4bps/信号 vs 市价 −4.8bps）**。「不可交易」的判定被推翻，Databento Plus 订阅（$1,780/月）的讨论重新打开。2025 全年期望粗算 ≈ 5090 信号 × 23.4bps ≈ 每天 ~980bps × 仓位，量级上覆盖月费重新可能。
+- **两个口径保留（诚实边界）**：① fill 判定是分钟 low/high 触及口径——触及 ≠ 队列优先级轮到你成交，真实 fill rate 会低于 92.5%（尤其价格瞬间穿过的场景），这是**乐观上界**，真值需 order_id 级委托队列模拟；② 出场仍是 t+6 收盘市价 +3bps，主动侧未优化。
+- **下一步**：2026 年对照组同实验在跑（完成后汇总两年对比）；决定性未知数只有一个——**用 mbo 的 order_id 做委托队列模拟，把触及口径 fill 上界压成真实 fill rate**。
+- **代码链接**：[`intraday/decay_curve.py`](intraday/decay_curve.py)（衰减曲线）、[`intraday/limit_sim.py`](intraday/limit_sim.py)（限价单模拟）、[`intraday/verify_2025.py`](intraday/verify_2025.py)（同口径基准与数据加载）、[`intraday/common_wf.py`](intraday/common_wf.py)（共用采样/窗口切分）、[`intraday/ml_orderflow_v2.py`](intraday/ml_orderflow_v2.py)（分钟聚合与特征）。
+
+### 修复（数据坏点虚增收益：verify 订正 +64.7→+24.0 bps；结论改写为「方向预测力成立但不可交易」）
+
+- **为什么改（2026-08-29）**：为做「值不值 $1,780/月」的财务测算（`intraday/economics.py`，逐笔记录交易明细），发现两个致命问题：① mbo 聚合分钟数据混有 **close=0 的坏分钟**（2025 年实测 856 个、分布 72 天、集中 UTC 21~23 时=美股盘后无成交的聚合伪影），模型在坏分钟出信号、以 0 价「成交」，做空假赚 100%——**31 笔假交易虚增净收益 43bps**（+64.7 中真实只有 +22）；② **下一分钟开盘进场（实盘近似）把 edge 全部吃掉**：回测口径 +22.0bps vs 下一分钟开盘 −4.8bps（3512 笔、每月皆负）——预测力存活窗口短于一分钟，扣真实进场延迟后净值为负，实盘口径保本仓位=∞（任何账户规模都付不起月费）。
+- **改了什么**：① `verify_2025.py` 的 `load_minute_year` 加坏点清洗（剔除 close≤0 分钟）+ 改用 pyarrow 选列单文件读（磁盘 89% 满时 pd.read_parquet 的 dataset API 反复 Errno 60 超时）+ 逐段容错（坏段跳过不中断整年）；② `ml_orderflow_v2._agg_minute` 修 pandas 3.0.1 兼容——`pd.DataFrame(dict)` 大 dict 构造触发「Buffer has wrong number of dimensions」回归 bug（38 天聚合失败）改为逐列赋值、`g.apply`（large_vol 行）在部分分组返回 DataFrame 改为分钟桶列 + transform 向量化；③ `economics.py` 修 t0+1 越界与 e2≤0 产生的 -inf。**2025 修正版重跑结果：AUC 0.603（90/98 窗口 >0.52）、净 +24.0 bps/笔（88/98 窗口正）、3596 笔**——方向预测力依然稳健成立（AUC 甚至更高），但量级从 +64.7 订正到 +24.0。
+- **结论改写**：跨年验证的「edge 跨年成立」表述修正为——**mbo 口径有跨年稳定的 6 分钟方向预测力（AUC 0.60/0.59），但在「下一分钟开盘进场」的真实执行假设下净收益为负，不可交易**；Databento Plus 订阅（$1,780/月）**不予考虑**。与富途成交价口径 5.5 年 −6bps 殊途同归。
+- **边界**：2026 修正版数字已补（2026-08-30，剔 3702 个坏分钟后 34 天 18978 分钟：AUC 0.589、15/20 窗口正，净 +39.2bps/笔、18/20 正窗口、726 笔——方向预测力跨年成立在两年都得到确认）；「下一分钟开盘吃掉 edge」的机制已由信号衰减曲线实验回答（见上条：edge 在第 1 分钟内兑现，被动挂单可拿到）。
+
+### 新增（gridtrader 纳入子项目体系：`.claude/` 超集关系建立）
+
+- **为什么改**：用户指定 GitHub 仓库 [xhqing/gridtrader](https://github.com/xhqing/gridtrader)（网格交易策略开发及回测工具，Python / backtrader）由本项目（Markowitz）负责维护。按全局规则「Agent 项目与子项目的 `.claude/` 超集关系」（2026-08-10 立），Agent 项目 `.claude/` 为权威源、子项目 `.claude/` 为其超集——保证用户只操作子项目时，子项目也体现该项目归 Markowitz 负责。
+- **改了什么**：
+  - 本项目 `CLAUDE.md` 新增「子项目清单」节，登记 gridtrader 为子项目。
+  - gridtrader 仓库 clone 到本地后：逐字节同步 `.claude/` 全部文件（`memory/`、`settings.json`、`settings.local.example.json`、`settings.local.json`、`skills/quant/`），运行时数据不同步（`data_cache/` 45 MB 行情缓存、`output/`、`__pycache__/`，均可重生、机器本地）；gridtrader 新建 `.claude/CLAUDE.md`（子项目自身说明 + 本项目 CLAUDE.md 全文随附）；gridtrader 补齐项目标配 `.gitignore`（隔离本机 `settings.local.json` 等）、`VERSION`（0.1.0）、`CHANGELOG.md`。
+  - 全局 `~/.claude/CLAUDE.md`「超集关系映射」表追加 QuantStrategistAgent → gridtrader 一行，并同步 CapabilityManagerAgent `claude/CLAUDE.md` 开源镜像。
+- **敏感信息检查**：同步前对全部待同步文件做过敏感字符串扫描（账户号 / token / password / api key / 密钥等），无命中；gridtrader 为公开仓库，`settings.local.json` 已由其新 `.gitignore` 隔离、不会入库。
+
+### 新增（外部页面研究：ETF 动量轮动工作台完整口径逆向 + 待办 T6~T8）
+
+- **为什么改**：用户提供外部页面 `https://cf1f14b4fc9041f9b348b3443d711a3d.bj8.agentos-app.net/`（「ETF 动量轮动工作台」，agentos-app.net 部署的单页应用），要求研究其内容、把有价值的东西加入待办。页面首屏数据全为「加载中」的动态渲染，Jina Reader 只拿到骨架；改抓完整 HTML（317KB）分析其内嵌纯前端策略引擎 JS，拿到两套策略的完整可复现口径。
+- **研究结论**：页面含两套策略，均为纯前端计算（拦截 `fetch` 把 `/api/*` 请求改走本地 JS 引擎，行情从腾讯财经日 K 接口拉取）：① **22 日加权动量轮动**——收盘价取对数后对交易日序号加权线性回归（权重 1→2 线性），得分 = 年化(`exp(斜率×250)−1`) × R²，上限 6，近 3 日任一日跌超 5% 清零，前 3 等权持有、全无效退默认组合（国证2000/黄金/银行），成本佣金 3‱（最低 5 元）+ 滑点 0.1%，35 只 A 股 ETF 池；② **全天候风险平价**——4 资产池，权重 ∝ 风险预算(债0.4/A股1.5/海外1.5/商品1.2) / 120 日 ES（ES 再按 25 日动量 sigmoid 调整 ×0.75~1.25），20 日周期再平衡 + 15% 偏离提前触发。另含复盘/战绩文案自动生成（小红书/公众号/付费圈子三模板，自带免责声明）——运营侧功能，与量化无关。页面访问密码门为前端明文 `'ETF2026'`，仅装饰性防护。
+- **改了什么**：研究成果写入 `TODO.md` 新增「🟢 绿色紧急度」节 3 条待办——**T6**（移植 22 日动量轮动策略进本项目回测，含完整口径）、**T7**（接入腾讯财经日 K 接口 `proxy.finance.qq.com/ifzqgtimg/appstock/app/fqkline/get` 作 A 股 ETF 日 K 数据源，免费无需 key）、**T8**（评估全天候风险平价是否立项，组合层配置策略、与本项目单标的信号定位不同）。
+
+### 新增（mbo 跨年验证通过 + 2025 数据备份 + 付费调研）
+
+- **跨年验证通过：mbo 委托簿口径 edge 在 2025 年复现（2026-08-24，里程碑）**：为检验「+30bps/笔 只在 2026 年 26 天验证过、是否小样本特例」，用免费额度剩余部分（$75.50）补拉 2025-06-01~09-30 全部 92 个交易日 QQQ mbo（26.4GB，`fetch_mbo.py` 新增 `--start` 参数支持显式日期区间），新建 `intraday/verify_2025.py` 做跨年检验——**完全同口径（同 15 特征、同超参数、同窗口切分，零调参零特征选择）分年独立 walk-forward**。结果：2025 年（98 窗口）AUC 0.588 vs 2026 年（28 窗口）0.587 几乎相同；净收益 **+64.7 bps/笔**（2026 为 +30）、净收益正窗口 83/98（85%）、3569 笔交易。判定：**edge 跨年成立，非 26 天特例**——2025 年 6~9 月波动环境比 2026 年 6~7 月更有利，净收益更高与 AUC 稳定自洽（方向判断力不变、波动放大盈亏）。样本扩至 118 天 / 130 窗口 / 4000+ 笔、跨两个年份。执行注记：8GB 内存机器需分年跑（`verify_2025.py --year 2025/2026`），全量连跑曾因 swap 抖动卡死。
+- **口径验证 + 富途 5.5 年证伪（2026-08-16~17）**：富途 1m 成交价（5.5 年）与 mbo 聚合分钟（委托簿口径）特征相关系数 ≈0——mbo 的 edge 是委托簿口径产物（挂单价/委托量信息），**在免费可得的成交价数据中不存在**；富途 1m 全历史重训 + walk-forward（`intraday/futu_wf.py`，819 窗口）净收益 −6bps/笔，成交价口径无 edge。撤回早前「纯价格即可、无需付费数据」结论（该结论错误地假设了口径一致）。
+- **付费实时数据调研（2026-08-23）**：实盘要拿到与训练口径一致的实时 mbo，最低门槛是 Databento **Plus 订阅 $1,750/月**（+流量 ~$29/月）——官方明示「Usage-based live data is not available for Databento US Equities」，实时 XNAS.ITCH mbo 仅 Plus/Unlimited 含；Standard $199 只有合成 NBBO（无 mbo）、DBEQ.BASIC 零许可费但只覆盖 4 个小交易所（无 Nasdaq）。历史数据按量付费不需订阅（mbo $1.20/GB），是低成本验证通道（本轮 2025 年验证即用此通道）。
+- **2025 数据备份 GitHub Release（2026-08-24）**：98 天 mbo 数据包（2025 全部 92 交易日 + 2026-07-17~08-05 增量 14 天，共 ~24GB）+ manifest（SHA256 逐文件校验）传至私有仓库 `xhqing/market-data-backup` 的 `tick-2025-08-23` Release，远端与本地逐一对账无缺。上传历经代理断流反复（约 4 个文件 3 次重试用尽后单独补传成功）。
+
+### 变更（公开边界配套：README 双版免责声明补齐 + LICENSE 追加投资风险免责条款 + STRATEGY.md 头部一句话免责）
+
+- **为什么改**：交易类项目开源边界配套（2026-08-21 待办 T2）——MIT 的 AS-IS 条款只覆盖软件缺陷、不覆盖投资损失；量化策略仓库尤需明确「回测不代表实盘」。
+- **改了什么**：① README.md / README_cn.md 风险声明段补「用户对每笔交易决策及其造成的损失承担全部责任」句（两版同步）；② LICENSE.md 文末追加中英双语「投资风险免责条款」段（不构成投资建议、回测不代表实盘、风险自担、补充而非替代 MIT 条款）；③ swing/STRATEGY.md 头部 blockquote 加一句话版本免责声明。
+
+### 修复（TODO / MEMO 编号加粗脚本截断事故：批量脚本切片 bug 把条目正文截空，从多恢复源全量重建）
+
+- **为什么改**：上一条「全量补编号」执行时，第二步「编号加粗」脚本存在切片 bug（`m.group(0)[m.end(3)+1:]` 起点算错），把所有被匹配条目的正文截成空壳（只剩 `- [ ] **Tn** `），共波及 1 个文件 5 条。发现后立即启动恢复（无 Time Machine / APFS 快照可用）。
+- **改了什么**：多恢复源重建并回写——① git 暂存区 / HEAD 旧版（TODO.md）；② Claude Code file-history 检查点（Edit 前快照，无）；③ 会话转写重放（按时间序重放历史 Edit / heredoc 写入，补齐检查点之后的新增条目，如 DayTradingAgent 今晚新增的 5 条活跃待办与「2026-08-21 批量处理」4 条归档）。重建后统一按规则加粗编号（**Tn** / **Mn**），DayTradingAgent 连续 T1~T115、DayTradingAgent-win 连续 T1~T44，正文经抽样与恢复源逐字一致。受损壳快照留存本机 tmp（/tmp/todo-damage-backup/）。
+- **边界**：恢复目标是「截断事故前的状态」（即编号未加粗、但已编号的正文完整版）；编号加粗为规则要求的新格式。git 未提交的其它改动不受影响。
+
+### 变更（TODO / MEMO 条目全量补编号：按新立待办编号规则一次性补齐存量）
+
+- **为什么改**：2026-08-21 用户新立全局规则「每条待办必须有唯一待办编号」（格式 T+序号 / M+序号，如 T11 / M11，连写、项目内递增、永不复用、归档保留），并指示存量待办与归档待办全部补上编号——编号用于用户与 AI 针对性沟通（「T11 处理了吗」），避免复述长正文。
+- **改了什么**：TODO.md 5 条补编号 T1~T5。正文内容零改动（只插入编号，不改写、不重排、时间戳不变）；编号顺序 = 活跃文件在前、归档在后、文件内按行序。
+### 变更（Visitors 徽章更名 Visits/day (14d)：alt 文本与 xhqing 集中统计新 label 对齐）
+
+- **为什么改**：用户要求（2026-08-17）访问量徽章名需表达「最近半月日均访问量」口径——xhqing 集中统计侧的 badge JSON label 已从 `Visitors` 改为 `Visits/day (14d)`（`Visits/day` 是 shields.io 表达日均的惯例写法、`(14d)` 标注 14 天滚动窗口），各仓 README 的徽章 alt 文本同步对齐，避免 alt 与徽章实际显示文字脱节。
+- **改了什么**：README 徽章区 `alt="Visitors"` → `alt="Visits/day (14d)"`，仅改 alt 文本，endpoint URL、数据源、徽章口径均不变（口径改动记 xhqing 仓库 CHANGELOG，本仓只改 alt）。
+
+### 变更（Visitors 徽章 alt 文本首字母大写：README 访问量徽章命名统一）
+
+- **为什么改**：用户指令（2026-08-16）「Visitors 徽章全局统一，首字母大写」——配合全局 `~/.claude/CLAUDE.md`「徽章英文首字母必须大写」新规，集中统计上线时挂的访问量徽章 `alt="visitors"` 为小写存量，与 badge JSON label（`Visits/day`）及大写规范不一致，本次一次收口。
+- **改了什么**：README（EN/CN）徽章区 visitors 徽章 `alt="visitors"` → `alt="Visitors"`，仅改 alt 显示文本，endpoint URL 与数据源不变。
+
+### 变更（README 徽章英文首字母大写：license / focus / markets / visitors 改首字母大写）
+
+- **为什么改**：用户立规（2026-08-16，写入全局 `~/.claude/CLAUDE.md`）——README 徽章英文小写首字母观感不一致，首字母大写是英文标识词的标准书写规范；本仓库存量徽章顺手全量修正。
+- **改了什么**：README.md / README_cn.md 各 3 处徽章 URL——`license-MIT` → `License-MIT`、`focus-quant%20strategies` → `Focus-Quant%20strategies`、`markets-HK%20%2F%20US` → `Markets-…`；`alt="visitors"` → `alt="Visitors"`。URL 指向与数据源不变，仅改显示文字。
+
+
+### 新增
+
+- **纯价格特征对比实验：订单流特征无实质增量，实盘无需付费数据（2026-08-16，重要）**：为回答「4 个订单流特征（ofi/flow_large/nb/avg_size）盘中获取需 Databento Live 实时订阅（$179+/月），能否去掉」，给 `common_wf.py` 的 `build_nonoap` 加 `price_only` 参数、`train.py`/`test.py` 加 `--price-only` 开关（模型固化到 `models/wf_H6_priceonly/`，与全特征版隔离），同口径 walk-forward 28 窗口对比。**结果：纯价格 11 特征 vs 全特征 15 特征——AUC 0.590 vs 0.587、AUC 正窗口 27/28 vs 25/28、净R（=收益率）+0.003 vs +0.003——edge 基本不变**（差异在噪声范围，结论是订单流无实质增量，不是纯价格更强）。实盘含义：模型 edge 主要来自价格/量特征（分钟动量/波动率/量比/价格冲击/时段），**分钟 K 富途 OpenD 免费实时可得且与训练数据（mbo 聚合分钟 OHLCV）口径一致（价格就是价格，无订单流特征的数据源口径漂移问题），实盘数据成本从 $179/月降为 0**。与早期 ml_trend（纯价格 AUC 0.52 无 edge）不矛盾——差异在时间尺度：15m K 预测 3~24 小时无 edge，分钟级预测 6 分钟有 edge（分钟级惯性在极短窗口存在，拉长被噪声淹没）。
+- **训练/测试解耦：`train.py` + `test.py` + `common_wf.py`（2026-08-15）**：按用户要求把 walk-forward 的训练与测试拆开——`train.py` 滚动窗口训练并把每个模型固化为 LightGBM 原生 txt（`models/wf_H<H>/window_N.txt` + `meta.json` 记录窗口切分/超参数/样本数）；`test.py` 载入固化模型测试，改止损宽度无需重训（`--stop-atr` 任意换），并校验数据样本数与窗口切分和训练时一致（数据漂移即报错提示重训）；共用逻辑（数据加载/ATR/不重叠采样/窗口切分）抽到 `common_wf.py` 保证口径一致。验证：载入模型测试的 AUC 0.587 与原 walk_forward_r.py 完全一致。`models/` 已加 .gitignore。
+- **无止损时 R 口径定稿：双向 risk = entry price（2026-08-15，用户定义）**：`test.py` 的 `--stop-atr 0` 分支由「risk 硬编码 1.0（无交易学含义）」改为**双向 risk = entry price**——做多止损在 0（跌 100%）、做空止损在 2×entry（涨 100%），对称；R 退化为以 entry 归一的收益率，**与收益率统计口径严格相等**（实测验证：无止损 R=+0.003 ↔ 收益率口径 +30 bps 吻合）。中间曾按「做多 risk=entry、做空 risk=∞」实现，做空 R≈0 贡献消失；用户定稿为双向对称口径。结论：**收益率是 R 在 risk=entry 下的特例**。
+
 ## [0.1.0] - 2026-08-10
+
+### 新增（README 访问量徽章——舰队集中式访问统计）
+
+- **为什么改**：全舰队上线集中式「真去重」访问统计（图片徽章方案无法去重，走官方 Traffic API 路线）：统计集中部署在 xhqing 仓库（`scripts/update_traffic.py` + 每日 GitHub Action），各 fleet 仓库只需在 README 挂徽章、零运行负担。
+- **改了什么**：README（EN/CN）徽章区新增 visitors 徽章（shields.io endpoint 指向 `xhqing/xhqing` 仓库 `traffic/badges/<repo>.json`，由每日采集的官方 Traffic API 数据更新）。徽章数字含义：按日去重访客的累计（GitHub 只提供每日 uniques，跨天不去重），自 2026-08-16 起累计。
 
 ### 新增
 

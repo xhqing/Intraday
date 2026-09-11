@@ -42,3 +42,6 @@ docs/
 
 # 量化策略 tick/订单簿数据（Databento，大文件，已备份到 market-data-backup Release）
 intraday/data_tick/
+
+# 日内 ML 固化模型（LightGBM 文件，可由 train.py 重生）
+intraday/models/

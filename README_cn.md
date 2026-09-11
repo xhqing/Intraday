@@ -5,11 +5,12 @@
 <h1 align="center">Markowitz —— 港股 / 美股量化策略 Agent</h1>
 
 <p align="center">
-  <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/focus-quant%20strategies-4F46E5.svg" alt="Focus: Quant Strategies" />
-  <img src="https://img.shields.io/badge/markets-HK%20%2F%20US-16C784.svg" alt="Markets: HK / US" />
+  <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <img src="https://img.shields.io/badge/Focus-Quant%20strategies-4F46E5.svg" alt="Focus: Quant Strategies" />
+  <img src="https://img.shields.io/badge/Markets-HK%20%2F%20US-16C784.svg" alt="Markets: HK / US" />
   <img src="https://img.shields.io/github/last-commit/xhqing/QuantStrategistAgent" alt="Last Commit" />
   <img src="https://img.shields.io/badge/Type-AI%20Agent-FF1493.svg" alt="Type: AI Agent" />
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/xhqing/xhqing/main/traffic/badges/QuantStrategistAgent.json" alt="Visits/day (14d)" />
 </p>
 
 <p align="center">🌐 <a href="README.md">English</a></p>
@@ -172,7 +173,7 @@ Markowitz 已越过 MVP。schema、回测引擎与数据层全部就位，**第�
 
 ## 风险声明
 
-量化策略是研究工具，不是收益保证。回测表现不代表未来收益——过拟合、市场状态切换、前视偏差都可能虚高历史指标。Markowitz 产出的是策略代码与可信度估计，供用户研究决策参考；**它不构成投资建议，也不执行任何交易。** 作者与贡献者不对任何交易损失承担责任。
+量化策略是研究工具，不是收益保证。回测表现不代表未来收益——过拟合、市场状态切换、前视偏差都可能虚高历史指标。Markowitz 产出的是策略代码与可信度估计，供用户研究决策参考；**它不构成投资建议，也不执行任何交易。** 用户对每笔交易决策及其造成的损失承担全部责任。作者与贡献者不对任何交易损失承担责任。
 
 ---
 

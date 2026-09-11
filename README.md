@@ -5,11 +5,12 @@
 <h1 align="center">Markowitz — Quant Strategy Agent (HK / US Equities)</h1>
 
 <p align="center">
-  <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/focus-quant%20strategies-4F46E5.svg" alt="Focus: Quant Strategies" />
-  <img src="https://img.shields.io/badge/markets-HK%20%2F%20US-16C784.svg" alt="Markets: HK / US" />
+  <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <img src="https://img.shields.io/badge/Focus-Quant%20strategies-4F46E5.svg" alt="Focus: Quant Strategies" />
+  <img src="https://img.shields.io/badge/Markets-HK%20%2F%20US-16C784.svg" alt="Markets: HK / US" />
   <img src="https://img.shields.io/github/last-commit/xhqing/QuantStrategistAgent" alt="Last Commit" />
   <img src="https://img.shields.io/badge/Type-AI%20Agent-FF1493.svg" alt="Type: AI Agent" />
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/xhqing/xhqing/main/traffic/badges/QuantStrategistAgent.json" alt="Visits/day (14d)" />
 </p>
 
 <p align="center">🌐 <a href="README_cn.md">简体中文</a></p>
@@ -172,7 +173,7 @@ What was tried and set aside, honestly:
 
 ## Risk Disclaimer
 
-Quantitative strategies are research tools, not guarantees. Backtested performance does not predict future results — overfitting, regime change, and lookahead bias can all inflate historical metrics. Markowitz produces strategy code and credibility estimates for the user's research judgment; **it is not financial advice and executes no trades.** The authors and contributors assume no liability for trading losses.
+Quantitative strategies are research tools, not guarantees. Backtested performance does not predict future results — overfitting, regime change, and lookahead bias can all inflate historical metrics. Markowitz produces strategy code and credibility estimates for the user's research judgment; **it is not financial advice and executes no trades.** The user assumes full responsibility for any trading decision and any resulting loss. The authors and contributors assume no liability for trading losses.
 
 ---
 
