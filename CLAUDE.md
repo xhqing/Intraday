@@ -62,7 +62,7 @@ Markowitz 的核心产物是**量化策略代码 + 回测标定的可信度查�
 
 ## 工作规则
 
-通用工作规范三件套（verify-before-report / file-operation-priority / tmp-dir-for-artifacts）由全局 `~/.claude/rules/` 提供、随全局配置自动加载，项目不再维护副本。开源 clone 者需自行在全局安装这三条规则（权威源见 CapabilityManagerAgent 仓库的 `.claude/rules/`）。
+通用工作规范三件套（verify-before-report / file-operation-priority / tmp-dir-for-artifacts）已全文并入全局 `~/.claude/CLAUDE.md`『工作规则』节、随全局 CLAUDE.md 自动加载，项目不再维护副本。开源 clone 者请把这三条规则自行并入自己的全局指令文件（权威源见 CapabilityManagerAgent 仓库的 `claude/CLAUDE.md`）。
 
 > 事实性 / 数值性结论先验证再陈述（实体归属、算术、日历、API 字段、费率），禁止把推测当事实——这条是量化工作的底线：策略代码里的每一个数值都必须有据可查、可复现。
 
