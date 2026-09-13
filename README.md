@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <img src="https://img.shields.io/badge/Version-0.1.0-blue.svg" alt="Version: 0.1.0" />
   <img src="https://img.shields.io/badge/Focus-Intraday%20research-4F46E5.svg" alt="Focus: Intraday Research" />
   <img src="https://img.shields.io/badge/Markets-US%20%28QQQ%29-16C784.svg" alt="Markets: US (QQQ)" />
   <img src="https://img.shields.io/badge/Type-Research-FF1493.svg" alt="Type: Research" />
