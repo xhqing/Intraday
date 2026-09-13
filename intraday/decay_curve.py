@@ -13,9 +13,11 @@
 
 注意：这是诊断实验（每个 H 独立训练同结构模型），不是调参——H 仍是 6 分钟策略的诊断扫描。
 
-用法（磁盘 IO 病态期：单 H 单进程跑，防内存叠加）：
+用法（磁盘 IO 病态期：单 H 单进程跑，防内存叠加）:
   python3 decay_curve.py --year 2025 --h-min 1 --h-max 3
   python3 decay_curve.py --year 2025 --h-min 4 --h-max 6
+非连续 H 用 --h-list（如长锚点）：
+  python3 decay_curve.py --year 2025 --h-list 40,50,60
 """
 
 import argparse
@@ -79,27 +81,26 @@ def main():
     parser.add_argument("--year", default="2025")
     parser.add_argument("--h-min", type=int, default=1)
     parser.add_argument("--h-max", type=int, default=3)
+    parser.add_argument("--h-list", default=None,
+                        help="逗号分隔的 H 列表（如 40,50,60），优先于 --h-min/--h-max")
     parser.add_argument("--train-days", type=int, default=8)
     parser.add_argument("--test-days", type=int, default=2)
     args = parser.parse_args()
 
+    hs = [int(x) for x in args.h_list.split(",")] if args.h_list else list(range(args.h_min, args.h_max + 1))
+
     min_df = add_atr(load_minute_year(args.year))
     print(f"{args.year}: {len(min_df)} 分钟", flush=True)
 
-    results = {}
-    for H in range(args.h_min, args.h_max + 1):
+    # 逐 H 落盘（支持分段跑合并 + 中断不丢已完成结果）
+    OUT.parent.mkdir(exist_ok=True)
+    merged = json.loads(OUT.read_text()) if OUT.exists() else {}
+    for H in hs:
         r = run_H(min_df, H, args.train_days, args.test_days)
-        results[str(H)] = r
+        merged[str(H)] = r
+        OUT.write_text(json.dumps(merged, indent=1), encoding="utf-8")
         print(f"H={H}: AUC {r['auc_mean']:.3f}（{r['auc_pos_windows']}/{r['n_windows']} 窗口）| "
               f"净 {r['net_bps']:+.1f} bps（{r['net_pos_windows']}/{r['n_nets']} 正）| 交易 {r['n_trades']}", flush=True)
-
-    # 累积落盘（支持分段跑合并）
-    OUT.parent.mkdir(exist_ok=True)
-    merged = {}
-    if OUT.exists():
-        merged = json.loads(OUT.read_text())
-    merged.update(results)
-    OUT.write_text(json.dumps(merged, indent=1), encoding="utf-8")
     print(f"\n已写 {OUT}（累计 {len(merged)} 个 H）")
 
 
