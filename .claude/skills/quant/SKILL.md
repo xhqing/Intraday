@@ -1,3 +1,8 @@
+---
+name: quant
+description: 量化策略开发与回测的执行规范（Markowitz 核心技能）：设计可回测的交易策略代码、拉取 K 线数据（富途 OpenD 分钟 K / 长桥日 K + parquet 缓存 data_cache）、跑历史回测 / walk-forward / 参数网格、用 g / avg_R / 胜率 / 赔率标定策略可信度，产出给 DayTradingAgent（Victor）的量化加权投票员。MUST USE 当用户要求开发 / 设计 / 改写可回测的量化策略、新增或修改 strategies 下的策略、跑回测（backtest / walk-forward / train-test / 参数敏感性）、讨论策略的胜率 / 赔率 / avg_R / EV / edge / 止损止盈口径、拉取或缓存 K 线数据、讨论 schema / 数据源 / 回测铁律（时间时区 / 输出全量化 / 同口径复现）时。NOT for：盯盘、下单、发实时交易信号（那是 Victor / trade skill 的职责）；策略结论的最终实盘决策。
+---
+
 # quant — 量化策略开发 skill
 
 > **Markowitz 的核心 skill**：设计可回测的交易策略代码，用历史数据回测标定其可信度，产出给 Victor（[DayTradingAgent](../../../../DayTradingAgent)）当「加权投票员」的量化信号。

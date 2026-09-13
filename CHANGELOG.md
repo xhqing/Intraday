@@ -1,8 +1,66 @@
 # Changelog
 
-本文件记录 QuantStrategistAgent 每个版本的主要变更，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
+本文件记录 Intraday 每个版本的主要变更，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。2026-09-13 前的条目为拆分前原 QuantStrategistAgent 项目所记，保留原貌不改。
 
 ## [Unreleased]
+
+### 新增（`.zcode/skills` 软链接指向 `.claude/skills`：zcode 会话复用同一份项目 skill）
+
+- **为什么改（2026-09-14）**：zcode（另一个 coding agent 工具）同样从项目级 `.zcode/skills/` 读取 skill，与 `.pi/skills` 同一模式建软链接，保证多工具共用同一份 skill、不产生副本分叉。
+- **改了什么**：新建 `.zcode/skills` 软链接，目标为相对路径 `../.claude/skills`（与 `.pi/skills` 完全一致，项目整体移动后链接仍有效）。`.zcode/` 未被 `.gitignore` 忽略，软链接随 git 跟踪。
+
+### 变更（quant skill 补 YAML frontmatter：修复 pi 加载器报 description is required）
+
+- **为什么改（2026-09-14）**：pi（coding agent harness）的 skill 加载器要求 SKILL.md 必带 YAML frontmatter（`name` + `description`），而 quant skill 是按 Claude Code 无 frontmatter 格式写的，导致 `.pi/skills/quant/SKILL.md` 加载报错「description is required」、整卡 skill 在 pi 会话不可用（`.pi/skills` 是指向 `.claude/skills` 的软链接，实际改的是 `.claude/skills/quant/SKILL.md` 一份）。
+- **改了什么**：在 SKILL.md 头部新增 frontmatter——`name: quant`；`description` 按正文「触发规则」节提炼（量化策略开发与回测、数据层拉取与缓存、g / avg_R / 胜率标定可信度、MUST USE 触发场景清单、NOT for 盯盘/下单/实时信号），符合 skill-creator 的 pushy 要求。正文一字未动。
+- **兼容性**：Claude Code 同样支持 frontmatter 格式（name / description 本就是其推荐的元数据），双工具加载均正常。
+
+### 变更（仓库拆分清理：继承 QSAgent 后删除与 Intraday 无关的内容）
+
+- **为什么改（2026-09-13）**：本仓库由原 QuantStrategistAgent 项目拆分而来（体系 = 公开门面 QuantStrategistAgent + 私有研究本体 Intraday（本仓库）+ 公开组件 Swing），拆分时整仓继承了门面仓库的内容，其中大量与日内研究无关（swing 策略工具集、门面 README 与项目指令、对外展示图等），需清除干净。
+- **改了什么**：
+  - 删除 `swing/` 整目录（6 文件：README / STRATEGY / common / check_signal / backtest / analyze）——日 K 策略工具集已独立为公开仓库 [xhqing/Swing](https://github.com/xhqing/Swing)（用户已自行删除并暂存，本条补记 CHANGELOG）。
+  - 删除 `.claude/memory/`（2 文件）、`.claude/settings.json`、`.claude/settings.local.example.json`（用户已自行删除并暂存，本条补记 CHANGELOG）——memory 内容与门面仓库绑定，settings 属 Claude Code 本机配置，私有研究仓库不需要。
+  - 根 `README.md` / `README_cn.md` 全文重写：由「QuantStrategistAgent 公开门面自述」改为「Intraday 私有研究本体自述」——去掉 swing 业绩 / 交付叙述与已失效的 `swing/` 链接、指向门面仓库的 last-commit / visits 徽章，改为体系三仓库定位、研究路径、当前状态摘要与数据源表；徽章改为 License / Focus: Intraday Research / Markets: US (QQQ) / Type: Research。
+  - `CLAUDE.md` 全文重写（`AGENTS.md` 为其软链接、内容自动同步）：由门面项目指令改为本仓库研究指令——保留三条铁律，新增 Databento mbo 数据约束与研究纪律节，删去产物契约细节（指向 quant skill `schema.md`）、gridtrader 子项目清单（属门面仓库职责）、commit skill 检测缓存节（旧位置副本，权威缓存在 `.commit-cache.md`）。
+  - 删除 `assets/backtest_example.png`、`assets/performance.png`、`assets/markowitz_workflow.svg`——均为 swing / 门面对外展示图（回测机制示例与业绩图属 Swing 仓库内容，工作流图属门面 README），新 README 不再引用；`assets/logo.svg` 已是 Intraday 项目 logo，保留。
+  - `.commit-cache.md` 清空全部缓存条目（保留文件头说明）——条目描述的是门面仓库的 GitHub 配置状态，对本私有仓库不成立，待 `/commit` 重新检测。
+  - `intraday/README.md` 定位行改写：原「与已交付的日 K 策略（`swing/`）分开」指向已删除目录，改为指向独立 Swing 仓库。
+  - `.claude/skills/quant/data.py` 注释「项目根 QuantStrategistAgent」→「项目根 Intraday」。
+  - 本机清理 `tmp/charts/`（swing 展示图的生成脚本与中间产物，tmp/ 已 gitignore、不入库）。
+  - CHANGELOG 文件头项目名由 QuantStrategistAgent 改为 Intraday（历史条目原地保留）。
+- **保留不动**：`.claude/skills/quant/`（quant skill——`intraday/` 的 `futu_wf.py` / `ml_orderflow.py` / `ml_trend.py` 直接依赖其 `data_cache/` 与数据层，且回测 / 数据规范仍是在用纪律）、`intraday/` 全部研究代码、`assets/logo.svg`、`TODO.md`（T1~T5 为 A 股日内方向属本仓库；T6~T8 偏日 K 动量轮动 / 组合配置，是否迁出门面待用户定夺）、`VERSION` / `LICENSE.md`。
+
+### 变更（TODO T6~T8 迁出至 Swing 仓库：日 K 级别内容归位）
+
+- **为什么改（2026-09-13）**：上条拆分清理时 T6~T8（外部页面研究成果三条：22 日加权动量轮动移植、腾讯财经日 K 接口接入、全天候风险平价评估）偏日 K / 组合配置级别、与日内研究不同尺度，归属待用户定夺；用户裁定「日 K 级别的内容可以移动到 Swing」。
+- **改了什么**：三条待办自 `TODO.md` 迁出，落入 Swing 仓库（公开仓库 [xhqing/Swing](https://github.com/xhqing/Swing)，本机 clone）首建的 `TODO.md`——保留原编号 T6~T8 便于跨仓库追溯（Swing 后续新编号自 T9 起），正文与原记录时间保留、仅修订跨仓库指向（「T1」等指本仓库待办的表述）与体系措辞；本仓库 `TODO.md` 删除已空的「🟢 绿色紧急度」节，并将「A 股日内 T+0 方向」节标题按 TODO 分节规范补 🟢 颜色标记；新建 `TODO-archive.md`（项目首建）归档原三条，标 ✅**已迁移** + 迁移时间与去向。敏感检查：三条正文仅为策略口径、公开接口 URL 与技术参数，无账户 / 密钥 / 个人隐私，可进公开仓库。
+- **边界**：T7（腾讯日 K 接口）虽随 T6 迁出，其双用途中的本仓库侧（A 股日内待办若需轻量日 K）已在意向中保留——需要时在本仓库另行接入，不跨仓库依赖。
+
+### 新增（`AGENTS.md` 软链接指向 `CLAUDE.md`：多工具共用同一份项目指令）
+
+- **为什么改（2026-09-13）**：用户要求建立软链接。`AGENTS.md` 是多种 agent 工具（ZCode 等）的项目级指令文件约定名，而本项目指令现存于 `CLAUDE.md`。不建软链接就要维护两份副本、必然分叉；建软链接让各工具按各自约定的文件名读到的都是同一份内容，单一权威源。
+- **改了什么**：新建 `AGENTS.md` 软链接，目标为相对路径 `CLAUDE.md`（项目整体移动后链接仍有效）。软链接未被 `.gitignore` 忽略，随 git 跟踪，clone 者同样获得该链接。
+
+### 变更（CLAUDE.md 删去「由 Claude Code 自动加载」说明句）
+
+- **为什么改**：用户 2026-09-12 要求 CLAUDE.md 不再强调本文由 Claude Code 加载，团队全部项目的 CLAUDE.md 统一清理此类语句。
+- **改了什么**（2026-09-12）：`CLAUDE.md` 开头角色定位行删去句尾「本文件由 Claude Code 在每次会话开头自动加载。」，角色描述本身保留。
+
+### 变更（`data_tick` 全量 parquet 重压缩 SNAPPY → ZSTD：41.70GB → 26.89GB，省 36%）
+
+- **为什么改（2026-09-12）**：本机磁盘使用率 91%（228G 仅剩 1.6G），`data_tick` 的 41.7G MBO 行情是最大单一占用。Databento MBO 数据（逐笔委托、大量重复结构）对 zstd 的压缩友好度显著高于 snappy，且 pyarrow 对 zstd parquet 读取无感兼容——读取代码零改动，仅换压缩编码。数据已有云端备份（market-data-backup Release），风险可控。
+- **改了什么**：`intraday/data_tick/` 下 3604 个 parquet 文件（`mbo_days/` 162 天 + 单日验证 1 天 + `mbo_chunks/` + `XNAS-*`）全部从 SNAPPY 重压缩为 ZSTD level 3（实测 level 1/3/6 对比中 level 3 性价比最高：时间几乎同 level 1、压缩率优于之），41.70GB → 26.89GB（省 36%）。每个文件重压缩后均过三重验证（行数一致 + 列名/列类型一致 + 全量读回与原表 `equals` 比对），无一失败；完成后另随机抽取跨日期 5 文件复验 ZSTD 编码且可正常读取，无 `.tmp` 残留。重压缩脚本存于 `tmp/recompress.py`（幂等可续跑，已是 ZSTD 的文件自动跳过）。
+
+### 变更（assets/logo.svg 换为项目象征 logo：与门面拟人头像区分）
+
+- **为什么改**：仓库重组后门面 QuantStrategistAgent 与私有本体 Intraday 的 logo 完全相同（同为 Markowitz 拟人头像 📊），用户裁定视觉区分原则：**拟人实体给拟人头像，项目给项目象征意义的 logo**——门面是拟人实体 Markowitz 的展示面，保留拟人头像；Intraday 是他的子项目，应换项目象征 logo。
+- **改了什么**：`assets/logo.svg` 重制：Markowitz 拟人头像（📊 + Markowitz + Quant Strategist，indigo/violet 渐变）→ 项目象征 logo（⏱️ 秒表 + Intraday + Intraday Trading Research，青→深藏青渐变，与团队其它项目不撞色/不撞 emoji，副标题口径对齐门面 README 对 Intraday 的描述「Active intraday research」）；同步 README.md / README_cn.md 的 img alt「Markowitz logo」→「Intraday logo」。
+
+### 变更（assets/logo.svg 副标题去中文）
+
+- **为什么改**：全局规则新增「Logo / 图标资产文字一律用英文」（2026-09-12 用户立，起因 Swing 仓库 logo 副标题混入中文被指出）：logo 是面向全球读者的视觉标识，中文受众已有 README_cn.md 双语通道；且 SVG 中文依赖查看环境的字体回退，渲染不可控。本次为按新规批量清理存量。
+- **改了什么**：`assets/logo.svg` 副标题「Quant Strategist · 量化策略师」→「Quant Strategist」。
 
 ### 新增（`.pi/skills` 软链接指向 `.claude/skills`：pi 会话复用同一份项目 skill）
 
@@ -63,6 +121,7 @@
 
 - **为什么改**：2026-08-21 用户新立全局规则「每条待办必须有唯一待办编号」（格式 T+序号 / M+序号，如 T11 / M11，连写、项目内递增、永不复用、归档保留），并指示存量待办与归档待办全部补上编号——编号用于用户与 AI 针对性沟通（「T11 处理了吗」），避免复述长正文。
 - **改了什么**：TODO.md 5 条补编号 T1~T5。正文内容零改动（只插入编号，不改写、不重排、时间戳不变）；编号顺序 = 活跃文件在前、归档在后、文件内按行序。
+
 ### 变更（Visitors 徽章更名 Visits/day (14d)：alt 文本与 xhqing 集中统计新 label 对齐）
 
 - **为什么改**：用户要求（2026-08-17）访问量徽章名需表达「最近半月日均访问量」口径——xhqing 集中统计侧的 badge JSON label 已从 `Visitors` 改为 `Visits/day (14d)`（`Visits/day` 是 shields.io 表达日均的惯例写法、`(14d)` 标注 14 天滚动窗口），各仓 README 的徽章 alt 文本同步对齐，避免 alt 与徽章实际显示文字脱节。
@@ -77,7 +136,6 @@
 
 - **为什么改**：用户立规（2026-08-16，写入全局 `~/.claude/CLAUDE.md`）——README 徽章英文小写首字母观感不一致，首字母大写是英文标识词的标准书写规范；本仓库存量徽章顺手全量修正。
 - **改了什么**：README.md / README_cn.md 各 3 处徽章 URL——`license-MIT` → `License-MIT`、`focus-quant%20strategies` → `Focus-Quant%20strategies`、`markets-HK%20%2F%20US` → `Markets-…`；`alt="visitors"` → `alt="Visitors"`。URL 指向与数据源不变，仅改显示文字。
-
 
 ### 新增
 

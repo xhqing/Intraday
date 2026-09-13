@@ -42,7 +42,7 @@ import pandas as pd
 # 本文件所在目录 = quant skill 目录（data.py / backtest.py / data_cache 都在这）
 Q_DIR = Path(__file__).resolve().parent
 DATA_CACHE = Q_DIR / "data_cache"          # parquet 缓存（已 gitignore）
-PROJECT_ROOT = Q_DIR.parent.parent.parent  # 项目根 QuantStrategistAgent
+PROJECT_ROOT = Q_DIR.parent.parent.parent  # 项目根 Intraday
 TMP = PROJECT_ROOT / "tmp"                 # 临时产物目录（已 gitignore）
 SNAPSHOT_DIR = TMP / "snapshot"            # 快照打包输出目录
 RESTORE_DIR = TMP / "restore"              # 恢复下载目录
