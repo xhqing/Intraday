@@ -45,3 +45,6 @@ intraday/data_tick/
 
 # 日内 ML 固化模型（LightGBM 文件，可由 train.py 重生）
 intraday/models/
+
+# 本地私有文件
+*.local.md
