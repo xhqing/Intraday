@@ -14,12 +14,12 @@
 
 <p align="center">🌐 <a href="README.md">English</a></p>
 
-**Intraday** 是量化策略 agent **Markowitz**（马科维茨）的**私有研究本体仓库**：日内尺度的策略研究——订单流（mbo）特征、分钟级机器学习信号、walk-forward 验证、执行口径模拟。本仓库由原 QuantStrategistAgent 项目拆分而来，体系共三个仓库、各司其职：
+**Intraday** 是量化策略 agent **Markowitz**（马科维茨）的**研究本体仓库**：日内尺度的策略研究——订单流（mbo）特征、分钟级机器学习信号、walk-forward 验证、执行口径模拟。本仓库由原 QuantStrategistAgent 项目拆分而来，体系共三个仓库、各司其职：
 
 | 仓库 | 定位 | 可见性 |
 |---|---|---|
 | [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | 公开门面——Markowitz 的对外展示面 | 公开 |
-| **Intraday（本仓库）** | 私有研究本体——日内策略研究现场 | 私有 |
+| **Intraday（本仓库）** | 研究本体——日内策略研究现场 | 公开 |
 | [Swing](https://github.com/xhqing/Swing) | 公开组件——已交付的日 K 趋势跟随策略工具集 | 公开 |
 
 > 这是一个研究仓库，不是产品：`intraday/` 下是实验与验证脚本，结论持续订正、留痕记录。**不用于实盘、不构成投资建议。** Markowitz 不盯盘、不下单——本仓库是独立的研究项目，研究结论以同口径回测为准。

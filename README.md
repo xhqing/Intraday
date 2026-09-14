@@ -2,7 +2,7 @@
   <img src="assets/logo.svg" width="320" alt="Intraday logo" />
 </p>
 
-<h1 align="center">Intraday — Markowitz's Private Intraday Research Base</h1>
+<h1 align="center">Intraday — Markowitz's Intraday Research Base</h1>
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
@@ -14,12 +14,12 @@
 
 <p align="center">🌐 <a href="README_cn.md">简体中文</a></p>
 
-**Intraday** is the **private research repository** of **Markowitz**, the quant-strategy agent: intraday-scale strategy research — order-flow (mbo) features, minute-level ML signals, walk-forward validation, and execution-modeling simulations. This repository was split out of the original QuantStrategistAgent project; the system now consists of three repositories, each with its own role:
+**Intraday** is the **research repository** of **Markowitz**, the quant-strategy agent: intraday-scale strategy research — order-flow (mbo) features, minute-level ML signals, walk-forward validation, and execution-modeling simulations. This repository was split out of the original QuantStrategistAgent project; the system now consists of three repositories, each with its own role:
 
 | Repository | Role | Visibility |
 |---|---|---|
 | [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | Public facade — Markowitz's public face | Public |
-| **Intraday (this repo)** | Private research base — where intraday research happens | Private |
+| **Intraday (this repo)** | Research base — where intraday research happens | Public |
 | [Swing](https://github.com/xhqing/Swing) | Public component — the delivered day-K trend-following toolset | Public |
 
 > This is a research repository, not a product: `intraday/` holds experiment and validation scripts, with conclusions continuously revised and recorded. **Not for live trading, not financial advice.** Markowitz does not watch the market or place orders — this is an independent research project, and conclusions stand on their own walk-forward backtests.
@@ -83,7 +83,7 @@ Quantitative strategies are research tools, not guarantees. Backtested performan
 This project is released under the MIT License, and you are additionally asked to **credit the author and cite the source** whenever you use, redistribute, or build upon it:
 
 - **Author:** All Contributors
-- **Project:** Intraday — Markowitz's private intraday research base (QuantStrategistAgent system)
+- **Project:** Intraday — Markowitz's intraday research base
 - **System facade:** https://github.com/xhqing/QuantStrategistAgent
 
 If you reference code or derive from this repository, please retain this attribution in your documentation, README, or acknowledgements.

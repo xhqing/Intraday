@@ -1,6 +1,6 @@
 # Intraday
 
-> **Markowitz（马科维茨）日内策略研究本体**的私有仓库。原 QuantStrategistAgent 项目拆分为三仓库：[QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent)（公开门面）+ **Intraday（本仓库，私有研究本体）** + [Swing](https://github.com/xhqing/Swing)（公开组件，日 K 策略工具集）。本仓库专注日内尺度的策略研究。
+> **Markowitz（马科维茨）日内策略研究本体**的研究仓库。原 QuantStrategistAgent 项目拆分为三仓库：[QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent)（公开门面）+ **Intraday（本仓库，研究本体）** + [Swing](https://github.com/xhqing/Swing)（公开组件，日 K 策略工具集）。本仓库专注日内尺度的策略研究。
 
 ## 本仓库做什么
 
