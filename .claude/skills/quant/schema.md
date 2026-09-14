@@ -22,7 +22,7 @@
 | `levels.support` | float | 支撑位（价格） |
 | `levels.resistance` | float | 阻力位（价格） |
 | `levels.breakout` | float | 突破触发位（价格） |
-| `levels.stop_loss_ref` | float | 止损参考位（价格，技术位；最终止损由 Victor 综合） |
+| `levels.stop_loss_ref` | float | 止损参考位（价格，技术位；最终止损由实盘综合定） |
 | `levels.take_profit_ref` | float | 止盈参考位（价格） |
 | `entry_condition` | string 枚举 | 进场条件类型：`pullback_hold`(回踩企稳) / `breakout`(突破) / `range_low`(区间支撑买) / `range_high`(区间阻力卖) / `none` |
 | `entry_params` | object(全数值) | 该条件的量化参数（如 `pullback_zone_low/high`、`confirm_bars`），由策略定义 |
@@ -116,7 +116,7 @@ $$g = \mathbb{E}[\ln(1+fR)] \approx f\cdot EV - \tfrac{f^2}{2}(\sigma^2 + EV^2)$
 
 **为什么用 `g` 而非「`EV` + `σ²` 双目标」**：双目标无全序（帕累托权衡难以决策——`EV` 高 `σ²` 也高的策略 vs `EV` 低 `σ²` 低的策略，谁好？），`g` 是单一实数可直接比较排序。且 **`g>0` 才有指数复利**，比 `EV>0` 严格得多——`EV>0` 但 `f` 过大或 `σ²` 过大都会让 `g<0`（长期缩水）。错误公式 `(1+f·EV)ⁿ` 丢掉方差惩罚、系统性诱导过度下注，**禁止用于决策**。
 
-**诊断成分**（`g` 的组成部分，保留以解释策略、指导 Victor 下注）：
+**诊断成分**（`g` 的组成部分，保留以解释策略、指导仓位决策）：
 
 | 成分 | 含义 | 在 `g` 中的角色 |
 |---|---|---|
@@ -124,7 +124,7 @@ $$g = \mathbb{E}[\ln(1+fR)] \approx f\cdot EV - \tfrac{f^2}{2}(\sigma^2 + EV^2)$
 | `net var_R` / `std_R`（σ²/σ） | 净赔率方差/标准差 | 方差惩罚 `−(f²/2)σ²`（负向）；同 EV 下 σ² 越小 g 越大 |
 | `f*` ≈ `EV/E[R²]` | 近似凯利最优下注 | 诊断：`f*≤0`=无 edge；实践用分数凯利（1/4~1/2 f*），超 2f* 必缩水 |
 
-> 用**净 R**（扣成本）算 `g`：每笔 `net_R_i = R_i − 成本/risk`，`g = mean(ln(1 + f·net_R_i))`。`cost_bps` 按市场（港股 18 含印花税、美股 3，见 4.4）。报告 `g` 用参考 `f=2%`（`BacktestResult.REF_F`）——固定基准使策略间可比；实战 `f` 由 Victor 按 `f*` 的分数凯利定。
+> 用**净 R**（扣成本）算 `g`：每笔 `net_R_i = R_i − 成本/risk`，`g = mean(ln(1 + f·net_R_i))`。`cost_bps` 按市场（港股 18 含印花税、美股 3，见 4.4）。报告 `g` 用参考 `f=2%`（`BacktestResult.REF_F`）——固定基准使策略间可比；实战 `f` 按 `f*` 的分数凯利定。
 
 **可用性门槛（策略"能用"的最低要求，参考值可按风险偏好调）**：
 
@@ -139,7 +139,7 @@ $$g = \mathbb{E}[\ln(1+fR)] \approx f\cdot EV - \tfrac{f^2}{2}(\sigma^2 + EV^2)$
 
 **综合参考（不优化、只看）**：Sharpe（风险调整收益）、Calmar（收益/回撤）。
 
-**一句话**：在"样本足、回撤可控、胜率可执行"的门槛约束下，**最大化 `g`（每笔对数增长率，在参考 f=2% 下）**——`g` 已内含净平均赔率（EV）与净赔率方差（σ²）的权衡，`g>0` 才交付 Victor。回测产出每笔净 R 记录 → 算 `g`/`EV`/`σ²`/`f*`（优化用），又按 category 分组填 `confidence.win_rate/avg_R`（实时用）。
+**一句话**：在"样本足、回撤可控、胜率可执行"的门槛约束下，**最大化 `g`（每笔对数增长率，在参考 f=2% 下）**——`g` 已内含净平均赔率（EV）与净赔率方差（σ²）的权衡，`g>0` 才交付使用。回测产出每笔净 R 记录 → 算 `g`/`EV`/`σ²`/`f*`（优化用），又按 category 分组填 `confidence.win_rate/avg_R`（实时用）。
 
 ### 4.1 确定性输入（数据缓存）
 - 首次从富途（分钟 K）/长桥（日 K）拉取 → 存 **parquet 快照** 到 `data_cache/`（含时区），回测只读缓存。
@@ -177,7 +177,7 @@ def evaluate(bars: pd.DataFrame, params: dict) -> dict | None:
 
 **止损价口径（基于成交价反推）**：`stop = entry ∓ stop_atr×ATR`、`take = entry ± take_atr×ATR`，基于实际成交价（t+1 开盘价）反推，`risk = stop_atr×ATR` 干净。
 
-**止损价口径（基于成交价反推，2026-08-03 改进）**：止损/止盈价基于**实际成交价**（t+1 开盘价）反推 `stop = entry ∓ stop_atr×ATR`，而非信号根开盘价——这样 `risk = stop_atr×ATR` 干净（策略层输出的 `stop_loss_ref` 仅作信号时刻参考，实时给 Victor 用；回测/实盘成交后由框架按成交价重算）。
+**止损价口径（基于成交价反推，2026-08-03 改进）**：止损/止盈价基于**实际成交价**（t+1 开盘价）反推 `stop = entry ∓ stop_atr×ATR`，而非信号根开盘价——这样 `risk = stop_atr×ATR` 干净（策略层输出的 `stop_loss_ref` 仅作信号时刻参考；回测/实盘成交后由框架按成交价重算）。
 
 ### 4.6 每笔记录（全数值）
 `{symbol, category, direction, entry_price, exit_price, R, hold_bars, entry_time(tz), exit_time(tz)}`
@@ -186,7 +186,7 @@ def evaluate(bars: pd.DataFrame, params: dict) -> dict | None:
 ### 4.7 置信度查表（confidence 来源）
 - 按 `category` 分组聚合所有历史交易 → 统计 `win_rate` / `avg_R` / `samples` → 存 `confidence_table.json`。
 - 盘中实时：策略出信号 + `category` → 查表填 `confidence`。
-- **样本量门槛**：`samples < 20` → 标 `low_sample: true`，调用方（Victor）自动降权；查无的 category → `confidence=null`（弃权）。
+- **样本量门槛**：`samples < 20` → 标 `low_sample: true`，调用方自动降权；查无的 category → `confidence=null`（弃权）。
 
 ### 4.8 复现保证
 **同 `data_cache` 快照 + 同 `params` + 同策略代码 = 完全相同的回测结果。** 版本化快照与参数（写入结果目录），任何时点重跑可对齐。

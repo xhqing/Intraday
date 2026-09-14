@@ -281,7 +281,7 @@ def run_backtest(strategy, symbol: str, ktype: str, params: dict | None = None,
 
     三个进出场机制（2026-08-03 改进）：
     1. 止损/止盈价基于实际成交价（t+1 开盘价）反推，而非信号根开盘价——
-       risk 干净等于 stop_atr × ATR。策略层输出的 stop_loss_ref 仅作参考（实时给 Victor）。
+       risk 干净等于 stop_atr × ATR。策略层输出的 stop_loss_ref 仅作参考（实时参考用）。
     2. 移动止损（trail_atr>0）：持仓中止损价随价格有利方向移动、只升不降（做多）。
     3. 反向信号平仓（allow_reverse_exit=True）：持仓中出现反向信号则 t+1 开盘平仓。
 

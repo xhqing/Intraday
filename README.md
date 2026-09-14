@@ -22,7 +22,7 @@
 | **Intraday (this repo)** | Private research base — where intraday research happens | Private |
 | [Swing](https://github.com/xhqing/Swing) | Public component — the delivered day-K trend-following toolset | Public |
 
-> This is a research repository, not a product: `intraday/` holds experiment and validation scripts, with conclusions continuously revised and recorded. **Not for live trading, not financial advice.** Markowitz does not watch the market or place orders — validated research conclusions become one weighted vote among the many inputs of Victor, the day-trading agent ([DayTradingAgent](https://github.com/xhqing/DayTradingAgent)).
+> This is a research repository, not a product: `intraday/` holds experiment and validation scripts, with conclusions continuously revised and recorded. **Not for live trading, not financial advice.** Markowitz does not watch the market or place orders — this is an independent research project, and conclusions stand on their own walk-forward backtests.
 
 ---
 
@@ -37,10 +37,10 @@ Whether intraday (minute-scale) price / order-flow signals carry a realizable ed
 
 ## Current Research Status (Summary)
 
-- **Directional predictive power holds across years**: order-book-basis 6-minute direction — 2025 AUC 0.603 (net +24.0 bps/trade), 2026 AUC 0.589 (net +39.2 bps/trade).
-- **Execution basis decides everything**: t+1 open market-order entry −4.8 bps (negative every month — the edge fears latency); a t+1 minute limit order at the signal price (δ=0) fills 92.5% on the touch basis with +23.4 bps expected per signal (the edge does not fear passive waiting).
-- **The decisive unknown**: real fill rate (price touching ≠ your turn in the queue) — pending an order_id-level queue simulation; live trading needs a Databento Plus subscription ($1,780/month), to be re-evaluated once the real fill rate is known.
-- **Falsified**: the trade-price basis (free Futu minute K) shows no edge over 5.5 years of retrained walk-forward (−6 bps/trade) — this edge is an order-book-basis product and does not exist in trade-price data.
+- **Concluded (2026-09-13): the main-line signal was a label artifact, and the deep-feature branch was opened and closed the same day — order-flow direction research is finished under the "minute scale + non-professional latency" constraint.** The full discovery chain: the order_id-level queue simulation showed a real fill rate of only 46% / 41% (2025/2026) with a per-signal expectation of −1.7 / −2.5 bps; the latency sweep curve came out suspiciously flat (−5.3 bps across 0–60 s), which triggered a root-cause dig: the signal-minute close (last submitted-order price) deviates from the last actual trade price by >10 bps in 24% of signals (>20 bps in 16%) — long-signal anchors average −28.8 bps below the market, short-signal anchors +31.0 bps above. The learned "direction" was mostly the mechanical reversion of the order-price anchor toward the market, not real price direction.
+- **Decisive test**: retrained with the same 15 order-flow features but a trade-price label (fill-price entry/exit) — AUC 0.5078 (2025) / 0.5146 (2026), i.e. random; net −5.9 / −5.7 bps; 0 of 126 walk-forward windows positive. **The existing 15 basic features have no predictive power for real price direction**; cross-validated by the independent Futu trade-price basis (−6 bps/trade over 5.5 years). Deep-feature branch (opened and closed the same day): 17 literature-backed features (CKS book-state OFI, multi-level depth imbalance, cancel/trade flow, event microstructure) tested under the same protocol — AUC 0.5005 (2025) / 0.4854 (2026), 0 of 46 windows positive. Academic OFI predictive power lives at the second scale (HFT territory); minute aggregation dilutes it to zero.
+- **Methodological legacy (the durable value of this project)**: ① order-price basis vs trade-price basis are two worlds — using order prices as labels injects an anchor-reversion artifact (a mandatory pre-check for any mbo/order-book research); ② the queue-priority simulation method (event-semantics verification + book-replay balance check + same-signal comparison) is reusable; ③ the discipline framework (bad-tick cleaning, non-overlapping sampling, walk-forward, same-basis comparison) proved effective.
+- Historical numbers (AUC 0.603, +24 bps upper bound, +23.4 bps touch basis, etc.) remain recorded in `intraday/STRATEGY.md` as an internally consistent artifact world, with correction notes attached.
 
 ## Repository Structure
 
