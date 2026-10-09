@@ -4,6 +4,21 @@
 
 ## [Unreleased]
 
+### 变更（体系叙事同步：删去 Victor / DayTradingAgent 关联表述，量化策略独立开发）
+
+- **为什么改**（2026-09-19）：主仓库 QuantStrategistAgent 叙事修正（用户裁定：Markowitz 量化策略独立开发、与 DayTradingAgent 无关系），随附嵌文同步清理，避免旧叙事继续误导。
+- **改了什么**（2026-09-19）：`CLAUDE.md` 随附嵌文同步主仓库 5 处修订（定位句独立开发、第 4 步沉淀策略库、独立边界块、中性化表述）。本仓库其余文件零改动（`g` 公式推导出处链接为参考文献引用，保留）。
+
+### 变更（quant skill 权威源移交主仓库，本仓库降为超集副本；运行时数据不动）
+
+- **为什么改**（2026-09-16 用户裁定）：超集规则要求 Agent 项目 `.claude/` 为权威源，quant skill 权威源从本仓库迁回主仓库 QuantStrategistAgent（新建其 `.claude/skills/quant/`，以本仓库副本为基线）；本仓库保留超集副本与运行时数据，研究代码零影响。
+- **改了什么**（2026-09-16）：① `CLAUDE.md`「目录与产物」节标注 quant skill 权威源在主仓库、本仓库为超集副本（`data_cache/` 等运行时数据继续留本仓库，`intraday/` 脚本直接复用的路径不变）；② 本仓库 skill 文件内容零改动（即权威基线本身）。另：主仓库 README 双语已把 Intraday 可见性改为公开口径（与 GitHub 实测一致）。
+
+### 变更（体系概念修正：定位改为 QuantStrategistAgent 子项目，删「门面 / 本体」表述）
+
+- **为什么改**（2026-09-16 用户裁定）：「私有本体 / 公开门面」概念作废，只有以 Agent 结尾命名的仓库才是真 Agent 项目——Intraday、Swing、gridtrader 均为 QuantStrategistAgent（Markowitz）的子项目。
+- **改了什么**（2026-09-16）：① `CLAUDE.md`（`AGENTS.md` 为其软链接）——开头定位改为「QuantStrategistAgent（Markowitz）的子项目」并列出同门子项目，目录表「研究本体」改「研究代码」，末尾新增主仓库 QuantStrategistAgent 项目根 CLAUDE.md 全文（超集同步）；② `README.md` / `README_cn.md`——标题与正文「研究本体仓库 / 公开门面 / 公开组件」改为「研究仓库 / 主仓库 / 子项目」，体系表格定位列同步改写并补 gridtrader 行，仓库结构注释「Research core」改「Research code」，署名节「体系门面」改「主仓库」。
+
 ### 变更（T5 提前执行完成：A 股 ETF 数据快照上传 market-data-backup）
 
 - **为什么改（2026-09-14）**：T11 定夺时 T5 原判保留（等下次快照一起打包）；用户随后指示「T5 也处理掉」——数据已在本地、单独打包成本极低，不必等下次快照。
