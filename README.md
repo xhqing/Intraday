@@ -47,12 +47,12 @@ Whether intraday (minute-scale) price / order-flow signals carry a realizable ed
 
 ```
 Intraday/
-├── CLAUDE.md                      # Entry point — role, ironclad rules, research discipline (AGENTS.md symlinks to it)
 ├── README.md / README_cn.md       # English / Chinese README (this file)
 ├── intraday/                      # Research code: train / test / validation / simulation scripts + status README
 │   ├── data_tick/                 # Full mbo order-book data (~27GB, gitignored, backed up to cloud)
+│   ├── data_cache/                # K-line parquet cache (gitignored; read via intraday/data.py)
+│   ├── output/                    # Backtest run artifacts (gitignored)
 │   └── models/                    # Frozen models (gitignored, regenerable via train.py)
-├── .claude/skills/quant/          # quant skill: K-line data layer (Futu / Longbridge + parquet cache) + quant dev spec
 └── assets/                        # logo
 ```
 
@@ -65,7 +65,7 @@ Intraday/
 | **Longbridge CLI** | 10+ yr day K (paginated, 1000/page) | Day-K cross-validation |
 | Futu capital flow / order-book snapshot / turnover | Current day only, no history | Excluded from backtests |
 
-Full survey (incl. paid channels) lives in `.claude/skills/quant/data-sources.md`.
+Full survey (incl. paid channels) lives in the quant skill of the main repo: [`data-sources.md`](https://github.com/xhqing/QuantStrategistAgent/blob/main/.claude/skills/quant/data-sources.md).
 
 ## Prerequisites
 

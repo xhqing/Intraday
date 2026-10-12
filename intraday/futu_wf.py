@@ -23,7 +23,7 @@ from sklearn.metrics import roc_auc_score
 
 from ml_orderflow_v2 import build_features
 
-FUTU_1M = Path(__file__).parent.parent / ".claude" / "skills" / "quant" / "data_cache" / "US.QQQ" / "1m.parquet"
+FUTU_1M = Path(__file__).parent / "data_cache" / "US.QQQ" / "1m.parquet"
 MODELS_ROOT = Path(__file__).parent / "models"
 
 

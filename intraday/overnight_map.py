@@ -29,7 +29,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-QC = Path(__file__).parent.parent / ".claude" / "skills" / "quant" / "data_cache"
+QC = Path(__file__).parent / "data_cache"
 COST = 2e-4   # A 股 ETF 双边佣金（0.5~1bps/边，取 2bps 保守）
 
 

@@ -47,12 +47,12 @@
 
 ```
 Intraday/
-├── CLAUDE.md                      # 项目入口——角色定位、铁律、研究纪律（AGENTS.md 为其软链接）
 ├── README.md / README_cn.md       # 英 / 中 README（本文件）
 ├── intraday/                      # 研究代码：train / test / 验证 / 模拟脚本 + 研究状态 README
 │   ├── data_tick/                 # mbo 全量订单簿数据（约 27GB，gitignore，已云端备份）
+│   ├── data_cache/                # K 线 parquet 缓存（gitignore；由 intraday/data.py 读取）
+│   ├── output/                    # 回测运行时产物（gitignore）
 │   └── models/                    # 固化模型（gitignore，train.py 可重生）
-├── .claude/skills/quant/          # quant skill：K 线数据层（富途 / 长桥 + parquet 缓存）+ 量化开发规范
 └── assets/                        # logo
 ```
 
@@ -65,7 +65,7 @@ Intraday/
 | **长桥 CLI** | 十几年日 K（分页，每页 1000 根） | 日 K 交叉验证 |
 | 富途资金流 / 盘口快照 / 换手率 | 仅当日、无历史 | 不进回测 |
 
-完整调研（含付费渠道）见 `.claude/skills/quant/data-sources.md`。
+完整调研（含付费渠道）见主仓库 quant skill：[`data-sources.md`](https://github.com/xhqing/QuantStrategistAgent/blob/main/.claude/skills/quant/data-sources.md)。
 
 ## 前置条件
 

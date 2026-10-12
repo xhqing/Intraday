@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+### 变更（智能体专属文件清理：CLAUDE.md / AGENTS.md / .claude / .pi / .zcode 删除；运行数据与脚本引用迁至普通目录）
+
+- **为什么改**（2026-10-12）：全局新规「智能体专属文件只属于 Agent 项目」（`~/.claude/docs/agents-registry.md`「智能体专属文件归属与子项目映射（2026-10-12 修订）」，取代原「子项目 `.claude/` 超集」规则）：`CLAUDE.md`、`AGENTS.md`、`.claude/`、项目级 `.pi/` 等「会话启动时按工作目录加载、表征智能体身份」的项目级文件只有 Agent 项目允许拥有，非 Agent 项目（含本子项目）一律不得存在；后台会话只能以 Agent 项目根目录为工作目录。本仓库原有的一整套（`CLAUDE.md` + `AGENTS.md` 软链接 + `.claude/` + `.pi/` + `.zcode/`）须清理。
+- **改了什么**（2026-10-12）：
+  - **删除**：`CLAUDE.md`、`AGENTS.md`（软链接）、`.claude/`（含 quant skill 副本与 `__pycache__`）、`.pi/`（软链接）、`.zcode/`（软链接，原指向 `.claude/skills`）。
+  - **迁移（避免研究脚本报废）**：`.claude/skills/quant/data_cache/`（K 线 parquet 缓存，约 258MB）→ `intraday/data_cache/`；`.claude/skills/quant/output/`（回测产物）→ `intraday/output/`；新增 `intraday/data.py`（quant skill `data.py` 的原样副本，提供 `load_cache` / `STOCK_POOL`，供脚本读取本地缓存；权威源仍在主仓库 QuantStrategistAgent 的 `.claude/skills/quant/`）。
+  - **脚本同步（7 个）**：`etf_recent.py` / `etf_rev.py` / `futu_wf.py` / `mom_open.py` / `overnight_map.py` 的缓存路径常量改指 `intraday/data_cache/`；`ml_orderflow.py` / `ml_trend.py` 的 `sys.path` 改插本目录（用 `intraday/data.py`）。已实测：`load_cache('US.QQQ','DAY')` 正常读取（5040 根）。
+  - **文档 / 配置同步**：`README.md` / `README_cn.md` 目录树与 data-sources 引用改指普通目录与主仓库；`.gitignore` 移除全部 `.claude/*` 规则、新增 `intraday/data_cache/` 与 `intraday/output/` 忽略。
+
 ### 变更（体系叙事同步：删去 Victor / DayTradingAgent 关联表述，量化策略独立开发）
 
 - **为什么改**（2026-09-19）：主仓库 QuantStrategistAgent 叙事修正（用户裁定：Markowitz 量化策略独立开发、与 DayTradingAgent 无关系），随附嵌文同步清理，避免旧叙事继续误导。

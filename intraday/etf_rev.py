@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-QC = Path(__file__).parent.parent / ".claude" / "skills" / "quant" / "data_cache"
+QC = Path(__file__).parent / "data_cache"
 HOLDS = [15, 30, 60, 90, "close"]
 
 

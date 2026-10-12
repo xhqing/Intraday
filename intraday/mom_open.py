@@ -27,7 +27,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-QC = Path(__file__).parent.parent / ".claude" / "skills" / "quant" / "data_cache"
+QC = Path(__file__).parent / "data_cache"
 COST = 6e-4   # 双边 3bps × 2
 
 

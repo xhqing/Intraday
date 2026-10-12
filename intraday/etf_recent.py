@@ -25,7 +25,7 @@ import pandas as pd
 
 from etf_rev import load_us, build_days
 
-QC = Path(__file__).parent.parent / ".claude" / "skills" / "quant" / "data_cache"
+QC = Path(__file__).parent / "data_cache"
 SYMS = ("SH.513050", "SZ.159920", "SH.513100")
 RECENT = pd.Timestamp("2023-01-01").date()
 COST = 4e-4   # 双边佣金 2bps + 单边滑点 2bps（保守）

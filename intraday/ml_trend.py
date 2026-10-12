@@ -21,9 +21,8 @@ import pandas as pd
 import lightgbm as lgb
 from sklearn.metrics import roc_auc_score
 
-QUANT = Path(__file__).resolve().parent.parent / ".claude" / "skills" / "quant"
 import sys
-sys.path.insert(0, str(QUANT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data import load_cache, STOCK_POOL
 
 
