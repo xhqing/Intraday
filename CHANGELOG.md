@@ -2,7 +2,7 @@
 
 本文件记录 Intraday 每个版本的主要变更，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。2026-09-13 前的条目为拆分前原 QuantStrategistAgent 项目所记，保留原貌不改。
 
-## [Unreleased]
+## [0.1.1] - 2026-10-12
 
 ### 变更（智能体专属文件清理：CLAUDE.md / AGENTS.md / .claude / .pi / .zcode 删除；运行数据与脚本引用迁至普通目录）
 
