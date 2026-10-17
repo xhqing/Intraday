@@ -2,7 +2,7 @@
   <img src="assets/logo.svg" width="320" alt="Intraday logo" />
 </p>
 
-<h1 align="center">Intraday —— Markowitz 的日内策略研究仓库</h1>
+<h1 align="center">Intraday —— Mark 的日内策略研究仓库</h1>
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
@@ -14,16 +14,16 @@
 
 <p align="center">🌐 <a href="README.md">English</a></p>
 
-**Intraday** 是量化策略 agent **Markowitz**（马科维茨）的日内策略研究仓库、[QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent)（Markowitz）的子项目：日内尺度的策略研究——订单流（mbo）特征、分钟级机器学习信号、walk-forward 验证、执行口径模拟。体系共一个主仓库 + 三个子项目仓库、各司其职：
+**Intraday** 是量化策略 agent **Mark**（马克）的日内策略研究仓库、[QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent)（Mark）的子项目：日内尺度的策略研究——订单流（mbo）特征、分钟级机器学习信号、walk-forward 验证、执行口径模拟。体系共一个主仓库 + 三个子项目仓库、各司其职：
 
 | 仓库 | 定位 | 可见性 |
 |---|---|---|
-| [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | 主仓库——Markowitz 的 agent 项目与对外展示面 | 公开 |
+| [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | 主仓库——Mark 的 agent 项目与对外展示面 | 公开 |
 | **Intraday（本仓库）** | 子项目——日内策略研究现场 | 公开 |
 | [Swing](https://github.com/xhqing/Swing) | 子项目——已交付的日 K 趋势跟随策略工具集 | 公开 |
 | [gridtrader](https://github.com/xhqing/gridtrader) | 子项目——网格交易策略开发及回测工具 | 公开 |
 
-> 这是一个研究仓库，不是产品：`intraday/` 下是实验与验证脚本，结论持续订正、留痕记录。**不用于实盘、不构成投资建议。** Markowitz 不盯盘、不下单——本仓库是独立的研究项目，研究结论以同口径回测为准。
+> 这是一个研究仓库，不是产品：`intraday/` 下是实验与验证脚本，结论持续订正、留痕记录。**不用于实盘、不构成投资建议。** Mark 不盯盘、不下单——本仓库是独立的研究项目，研究结论以同口径回测为准。
 
 ---
 
@@ -84,7 +84,7 @@ Intraday/
 本项目以 MIT 许可证发布，额外请求使用者在**使用、二次分发或基于本项目构建衍生作品**时，注明作者并引用项目地址：
 
 - **作者：** All Contributors
-- **项目：** Intraday —— Markowitz 的日内策略研究仓库（QuantStrategistAgent 子项目）
+- **项目：** Intraday —— Mark 的日内策略研究仓库（QuantStrategistAgent 子项目）
 - **主仓库：** https://github.com/xhqing/QuantStrategistAgent
 
 若你引用代码或基于本仓库二次开发，请在文档 / README / 致谢中保留以上出处。

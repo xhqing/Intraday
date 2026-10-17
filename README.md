@@ -2,7 +2,7 @@
   <img src="assets/logo.svg" width="320" alt="Intraday logo" />
 </p>
 
-<h1 align="center">Intraday — Markowitz's Intraday Research Repository</h1>
+<h1 align="center">Intraday — Mark's Intraday Research Repository</h1>
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
@@ -14,16 +14,16 @@
 
 <p align="center">🌐 <a href="README_cn.md">简体中文</a></p>
 
-**Intraday** is the intraday research repository of **Markowitz**, the quant-strategy agent, and a sub-project of [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) (Markowitz): intraday-scale strategy research — order-flow (mbo) features, minute-level ML signals, walk-forward validation, and execution-modeling simulations. The system consists of one main repository plus three sub-project repositories, each with its own role:
+**Intraday** is the intraday research repository of **Mark**, the quant-strategy agent, and a sub-project of [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) (Mark): intraday-scale strategy research — order-flow (mbo) features, minute-level ML signals, walk-forward validation, and execution-modeling simulations. The system consists of one main repository plus three sub-project repositories, each with its own role:
 
 | Repository | Role | Visibility |
 |---|---|---|
-| [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | Main repository — Markowitz's agent project and public face | Public |
+| [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | Main repository — Mark's agent project and public face | Public |
 | **Intraday (this repo)** | Sub-project — where intraday research happens | Public |
 | [Swing](https://github.com/xhqing/Swing) | Sub-project — the delivered day-K trend-following toolset | Public |
 | [gridtrader](https://github.com/xhqing/gridtrader) | Sub-project — grid-trading strategy development & backtesting tool | Public |
 
-> This is a research repository, not a product: `intraday/` holds experiment and validation scripts, with conclusions continuously revised and recorded. **Not for live trading, not financial advice.** Markowitz does not watch the market or place orders — this is an independent research project, and conclusions stand on their own walk-forward backtests.
+> This is a research repository, not a product: `intraday/` holds experiment and validation scripts, with conclusions continuously revised and recorded. **Not for live trading, not financial advice.** Mark does not watch the market or place orders — this is an independent research project, and conclusions stand on their own walk-forward backtests.
 
 ---
 
@@ -84,7 +84,7 @@ Quantitative strategies are research tools, not guarantees. Backtested performan
 This project is released under the MIT License, and you are additionally asked to **credit the author and cite the source** whenever you use, redistribute, or build upon it:
 
 - **Author:** All Contributors
-- **Project:** Intraday — Markowitz's intraday research repository (QuantStrategistAgent sub-project)
+- **Project:** Intraday — Mark's intraday research repository (QuantStrategistAgent sub-project)
 - **Main repository:** https://github.com/xhqing/QuantStrategistAgent
 
 If you reference code or derive from this repository, please retain this attribution in your documentation, README, or acknowledgements.
