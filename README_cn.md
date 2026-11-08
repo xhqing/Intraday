@@ -83,7 +83,7 @@ Intraday/
 
 本项目以 MIT 许可证发布，额外请求使用者在**使用、二次分发或基于本项目构建衍生作品**时，注明作者并引用项目地址：
 
-- **作者：** All Contributors
+- **作者：** xhqing
 - **项目：** Intraday —— Mark 的日内策略研究仓库（QuantStrategistAgent 子项目）
 - **主仓库：** https://github.com/xhqing/QuantStrategistAgent
 
@@ -93,4 +93,4 @@ Intraday/
 
 ## 许可证
 
-[MIT](LICENSE.md) © 2026 All Contributors。
+[MIT](LICENSE.md) © 2026 xhqing。

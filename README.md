@@ -83,7 +83,7 @@ Quantitative strategies are research tools, not guarantees. Backtested performan
 
 This project is released under the MIT License, and you are additionally asked to **credit the author and cite the source** whenever you use, redistribute, or build upon it:
 
-- **Author:** All Contributors
+- **Author:** xhqing
 - **Project:** Intraday — Mark's intraday research repository (QuantStrategistAgent sub-project)
 - **Main repository:** https://github.com/xhqing/QuantStrategistAgent
 
@@ -93,4 +93,4 @@ If you reference code or derive from this repository, please retain this attribu
 
 ## License
 
-[MIT](LICENSE.md) © 2026 All Contributors.
+[MIT](LICENSE.md) © 2026 xhqing.
