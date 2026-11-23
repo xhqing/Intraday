@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/Version-0.1.2-blue.svg" alt="Version: 0.1.2" />
+  <img src="https://img.shields.io/badge/Version-0.1.3-blue.svg" alt="Version: 0.1.3" />
   <img src="https://img.shields.io/badge/Focus-Intraday%20research-4F46E5.svg" alt="Focus: Intraday Research" />
   <img src="https://img.shields.io/badge/Markets-US%20%28QQQ%29-16C784.svg" alt="Markets: US (QQQ)" />
   <img src="https://img.shields.io/badge/Type-Research-FF1493.svg" alt="Type: Research" />
@@ -14,11 +14,11 @@
 
 <p align="center">🌐 <a href="README_cn.md">简体中文</a></p>
 
-**Intraday** is the intraday research repository of **Mark**, the quant-strategy agent, and a sub-project of [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) (Mark): intraday-scale strategy research — order-flow (mbo) features, minute-level ML signals, walk-forward validation, and execution-modeling simulations. The system consists of one main repository plus three sub-project repositories, each with its own role:
+**Intraday** is the intraday research repository of **Mark**, the quant-strategy agent, and a sub-project of [quant-agent](https://github.com/xhqing/quant-agent) (Mark): intraday-scale strategy research — order-flow (mbo) features, minute-level ML signals, walk-forward validation, and execution-modeling simulations. The system consists of one main repository plus three sub-project repositories, each with its own role:
 
 | Repository | Role | Visibility |
 |---|---|---|
-| [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | Main repository — Mark's agent project and public face | Public |
+| [quant-agent](https://github.com/xhqing/quant-agent) | Main repository — Mark's agent project and public face | Public |
 | **Intraday (this repo)** | Sub-project — where intraday research happens | Public |
 | [Swing](https://github.com/xhqing/Swing) | Sub-project — the delivered day-K trend-following toolset | Public |
 | [gridtrader](https://github.com/xhqing/gridtrader) | Sub-project — grid-trading strategy development & backtesting tool | Public |
@@ -65,7 +65,7 @@ Intraday/
 | **Longbridge CLI** | 10+ yr day K (paginated, 1000/page) | Day-K cross-validation |
 | Futu capital flow / order-book snapshot / turnover | Current day only, no history | Excluded from backtests |
 
-Full survey (incl. paid channels) lives in the quant skill of the main repo: [`data-sources.md`](https://github.com/xhqing/QuantStrategistAgent/blob/main/.claude/skills/quant/data-sources.md).
+Full survey (incl. paid channels) lives in the quant skill of the main repo: [`data-sources.md`](https://github.com/xhqing/quant-agent/blob/main/.agents/skills/quant/data-sources.md).
 
 ## Prerequisites
 
@@ -83,9 +83,9 @@ Quantitative strategies are research tools, not guarantees. Backtested performan
 
 This project is released under the MIT License, and you are additionally asked to **credit the author and cite the source** whenever you use, redistribute, or build upon it:
 
-- **Author:** xhqing <https://github.com/xhqing>
-- **Project:** Intraday — Mark's intraday research repository (QuantStrategistAgent sub-project)
-- **Main repository:** https://github.com/xhqing/QuantStrategistAgent
+- **Author:** xhqing
+- **Project:** Intraday — Mark's intraday research repository (quant-agent sub-project)
+- **Main repository:** https://github.com/xhqing/quant-agent
 
 If you reference code or derive from this repository, please retain this attribution in your documentation, README, or acknowledgements.
 
@@ -93,4 +93,4 @@ If you reference code or derive from this repository, please retain this attribu
 
 ## License
 
-[MIT](LICENSE.md) © 2026 xhqing <https://github.com/xhqing>.
+[MIT](LICENSE.md) © 2026 xhqing.

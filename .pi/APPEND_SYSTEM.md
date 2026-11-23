@@ -1,6 +1,6 @@
 # Intraday 项目规则（Worker 追加）
 
-你在 **Intraday**（Mark 的日内策略研究仓库）里干活。本文件由 pi 在会话启动时自动追加到系统提示，只写本仓库特有的硬约束；Agent 身份与通用规则由 `AGENTS.md` 软链接提供，此处不重述。
+你在 **Intraday**（Mark 的日内策略研究仓库）里干活。本文件由 pi 在会话启动时自动追加到系统提示，只写本仓库特有的硬约束；Agent 身份与通用规则由本仓库 `AGENTS.md` 提供，此处不重述。
 
 ## 你的角色
 
@@ -34,4 +34,4 @@
 
 ## 更多
 
-研究细节见 `intraday/CONCLUSIONS.md` 与 `intraday/STRATEGY.md`；数据源调研见主仓库 quant skill 的 `data-sources.md`；通用工作规则见全局 `~/.pi/agent/AGENTS.md`。
+研究细节见 `intraday/CONCLUSIONS.md` 与 `intraday/STRATEGY.md`；数据源调研见 quant-agent 仓库的 quant skill（`.agents/skills/quant/data-sources.md`）；通用工作规则见全局 `~/.pi/agent/AGENTS.md`。

@@ -2,6 +2,16 @@
 
 本文件记录 Intraday 每个版本的主要变更，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。2026-09-13 前的条目为拆分前原 QuantStrategistAgent 项目所记，保留原貌不改。
 
+## [0.1.3] - 2026-11-23
+
+### 变更（从 quant-agent 抽回为独立仓库）
+
+- **为什么改**：用户 2026-11-23 要求把 `Intraday` / `Swing` / `gridtrader` 从 quant-agent 抽回、各自恢复为独立仓库，作为 Mark 名下的子项目（2026-11-08 曾把三个仓库并入 quant-agent 成为三个目录）。
+- **改了什么**：① 内容同步为并入期间的最新版（项目更名 quant-agent、`xhqing and contributors` 署名口径、指向 `trading-agent` 的链接等）；② `AGENTS.md` 由指向 Agent 项目的软链接改为本仓库实体文件，写明子项目归属、Worker 边界与版本权威；③ 删除跨仓库路径已失效的 `.pi/settings.json`；④ `LICENSE.md` 版权行统一为 `Copyright (c) 2026 xhqing and contributors`；⑤ 补 `CONTRIBUTING.md` / `CONTRIBUTING_cn.md`；⑥ VERSION 0.1.2 → 0.1.3，双语 README 徽章同步。
+- **回归风险**：无——不涉及研究代码与回测口径（`intraday/` 下的脚本内容未改），只改仓库形态、元文件与文档。
+
+## [Unreleased]
+
 ### 新增（CI 门禁：validate 检查 + main 分支 strict 保护）
 
 - **为什么改**：用户 2026-11-03 立规「新建仓库一律必须 strict 模式的 PR CI」，并要求 28 个不合规的存量仓库统一执行最新标准。本项目此前在 PR 上没有门禁——改动合进 main 全靠人工把关，PR 可以拿旧 main 上通过的检查直接合并，回归防护存在缺口。本次补齐团队要求的「三件套」：PR 上真实跑的 CI 检查 + 挂成 required status check + `required_status_checks.strict = true`。

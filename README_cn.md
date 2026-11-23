@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/Version-0.1.2-blue.svg" alt="Version: 0.1.2" />
+  <img src="https://img.shields.io/badge/Version-0.1.3-blue.svg" alt="Version: 0.1.3" />
   <img src="https://img.shields.io/badge/Focus-Intraday%20research-4F46E5.svg" alt="Focus: Intraday Research" />
   <img src="https://img.shields.io/badge/Markets-US%20%28QQQ%29-16C784.svg" alt="Markets: US (QQQ)" />
   <img src="https://img.shields.io/badge/Type-Research-FF1493.svg" alt="Type: Research" />
@@ -14,11 +14,11 @@
 
 <p align="center">🌐 <a href="README.md">English</a></p>
 
-**Intraday** 是量化策略 agent **Mark**（马克）的日内策略研究仓库、[QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent)（Mark）的子项目：日内尺度的策略研究——订单流（mbo）特征、分钟级机器学习信号、walk-forward 验证、执行口径模拟。体系共一个主仓库 + 三个子项目仓库、各司其职：
+**Intraday** 是量化策略 agent **Mark**（马克）的日内策略研究仓库、[quant-agent](https://github.com/xhqing/quant-agent)（Mark）的子项目：日内尺度的策略研究——订单流（mbo）特征、分钟级机器学习信号、walk-forward 验证、执行口径模拟。体系共一个主仓库 + 三个子项目仓库、各司其职：
 
 | 仓库 | 定位 | 可见性 |
 |---|---|---|
-| [QuantStrategistAgent](https://github.com/xhqing/QuantStrategistAgent) | 主仓库——Mark 的 agent 项目与对外展示面 | 公开 |
+| [quant-agent](https://github.com/xhqing/quant-agent) | 主仓库——Mark 的 agent 项目与对外展示面 | 公开 |
 | **Intraday（本仓库）** | 子项目——日内策略研究现场 | 公开 |
 | [Swing](https://github.com/xhqing/Swing) | 子项目——已交付的日 K 趋势跟随策略工具集 | 公开 |
 | [gridtrader](https://github.com/xhqing/gridtrader) | 子项目——网格交易策略开发及回测工具 | 公开 |
@@ -65,7 +65,7 @@ Intraday/
 | **长桥 CLI** | 十几年日 K（分页，每页 1000 根） | 日 K 交叉验证 |
 | 富途资金流 / 盘口快照 / 换手率 | 仅当日、无历史 | 不进回测 |
 
-完整调研（含付费渠道）见主仓库 quant skill：[`data-sources.md`](https://github.com/xhqing/QuantStrategistAgent/blob/main/.claude/skills/quant/data-sources.md)。
+完整调研（含付费渠道）见主仓库 quant skill：[`data-sources.md`](https://github.com/xhqing/quant-agent/blob/main/.agents/skills/quant/data-sources.md)。
 
 ## 前置条件
 
@@ -83,9 +83,9 @@ Intraday/
 
 本项目以 MIT 许可证发布，额外请求使用者在**使用、二次分发或基于本项目构建衍生作品**时，注明作者并引用项目地址：
 
-- **作者：** xhqing <https://github.com/xhqing>
-- **项目：** Intraday —— Mark 的日内策略研究仓库（QuantStrategistAgent 子项目）
-- **主仓库：** https://github.com/xhqing/QuantStrategistAgent
+- **作者：** xhqing
+- **项目：** Intraday —— Mark 的日内策略研究仓库（quant-agent 子项目）
+- **主仓库：** https://github.com/xhqing/quant-agent
 
 若你引用代码或基于本仓库二次开发，请在文档 / README / 致谢中保留以上出处。
 
@@ -93,4 +93,4 @@ Intraday/
 
 ## 许可证
 
-[MIT](LICENSE.md) © 2026 xhqing <https://github.com/xhqing>。
+[MIT](LICENSE.md) © 2026 xhqing。
